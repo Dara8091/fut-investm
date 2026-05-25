@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const PAGE_INFO = {
         dashboard: { title: 'Dashboard General', subtitle: 'Rendimiento de inversión y balance del portafolio.' },
-        wallet: { title: 'Billetera y Fondeo', subtitle: 'Inyección de capital o liquidación de retiros.' },
+        wallet: { title: 'Dinero', subtitle: 'Fondeo, depósitos y retiros.' },
         security: { title: 'Centro de Seguridad', subtitle: 'Protección AES-256 y controles TOTP.' },
         network: { title: 'Estructura de Red', subtitle: 'Visualización interactiva del volumen organizacional.' },
         futinves: { title: 'FutInvest — Motor de Arbitraje', subtitle: 'Escaneo y ejecución de oportunidades de arbitraje entre exchanges.' },
