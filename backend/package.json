@@ -1,6 +1,6 @@
 {
   "name": "fut-invest-backend",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Backend API para fut.invest - Panel de Inversión Institucional",
   "main": "src/index.js",
   "scripts": {
@@ -10,11 +10,15 @@
     "test": "jest --runInBand --forceExit --detectOpenHandles",
     "test:watch": "jest --runInBand --watch",
     "test:coverage": "jest --runInBand --forceExit --coverage",
+    "test:e2e": "jest --runInBand --forceExit --testPathPattern='e2e-critical'",
     "test:admin": "jest --runInBand --testPathPattern='admin|waf|settings'",
     "audit": "npm audit --audit-level=high",
     "audit:fix": "npm audit fix --audit-level=high",
     "lint": "eslint src/ --ext .js",
     "certs": "powershell -File scripts/generate-certs.ps1",
+    "secrets": "node scripts/generate-secrets.js",
+    "backup": "node scripts/backup.js",
+    "pre-deploy": "node scripts/pre-deploy-checklist.js",
     "logs:error": "tail -f logs/error.log",
     "logs:all": "tail -f logs/combined.log"
   },
@@ -40,6 +44,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "nodemailer": "^8.0.8",
+    "pg": "^8.21.0",
     "prom-client": "^15.1.3",
     "socket.io": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",

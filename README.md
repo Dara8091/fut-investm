@@ -1,98 +1,94 @@
-# fut.invest — Panel de Inversión y Código Flutter
+# fut.invest — Plataforma de Inversión Profesional
 
-Este repositorio contiene la arquitectura de marca y los tokens de diseño **Institutional Trust** implementados para el proyecto **fut.invest**.
+> Sistema institucional de inversión con ROI dinámico, arbitraje automatizado y gestión profesional de portafolio.
 
-Dado que tu sistema local no dispone de Flutter instalado de forma global, hemos generado una **arquitectura híbrida premium**:
-1. **Un Prototipo Interactivo Web (SPA):** Diseñado con HTML5, CSS3 y Vanilla JavaScript. Te permite visualizar y probar el comportamiento real de la aplicación en vivo con animaciones fluidas y simuladores funcionales.
-2. **Estructura y Código de Flutter (`lib/`):** El código limpio en Dart estructurado y listo para producción, ubicado en la raíz del proyecto para que puedas copiar la estructura física directamente a tu entorno Flutter.
+## 🚀 Características
 
----
+- **Dashboard en Tiempo Real**: Balance y ROI dinámico con actualizaciones vía WebSocket
+- **Motor de Arbitraje FutInvest**: Escaneo multi-exchange (Binance, OKX, Bybit, KuCoin, Gate.io)
+- **Gestión de Billetera**: Depósitos/retiros con validación de direcciones cripto
+- **Seguridad Avanzada**: AES-256, TOTP 2FA, rate limiting, WAF
+- **Panel de Administración**: Gestión de usuarios, retiros, comisiones
+- **Sistema de Referidos**: Códigos únicos con bonificaciones
+- **KYC Integrado**: Verificación de identidad con subida de documentos
+- **Dual Database**: Compatible con SQLite y PostgreSQL
 
-## 📂 Estructura del Espacio de Trabajo
+## 📁 Estructura
 
 ```
 fut_invest/
-├── index.html                  # Estructura principal de la SPA Web
-├── style.css                   # Diseño CSS Premium, variables y animaciones
-├── app.js                      # Controlador de eventos JS, simulaciones y lógica
-├── README.md                   # Esta documentación
-└── lib/                        # Estructura original de Flutter
-    ├── theme/
-    │   └── app_theme.dart      # Tu ThemeData de Flutter (colores de la marca)
-    ├── services/
-    │   └── encryption_service.dart # Cifrado AES-256 GCM con Secure Storage
-    └── screens/
-        ├── dashboard_screen.dart # Dashboard Flutter con balance y ROI dinámico
-        ├── wallet_screen.dart    # Pasarela cripto Flutter con validación Regex y QR
-        ├── security_screen.dart  # Centro de seguridad con simulador AES/2FA
-        └── binary_tree_screen.dart # Árbol Binario con InteractiveViewer
+├── index.html              # Frontend SPA
+├── style.css               # Estilos profesionales
+├── app.js                  # Lógica frontend
+├── backend/
+│   ├── src/
+│   │   ├── index.js        # Entry point
+│   │   ├── routes/         # Rutas API
+│   │   ├── controllers/    # Controladores
+│   │   ├── services/       # Servicios (arbitraje, notificaciones, etc.)
+│   │   ├── middleware/     # Auth, rate limiting, WAF, etc.
+│   │   ├── config/         # DB, logger, swagger
+│   │   └── db/             # Migraciones
+│   ├── .env                # Variables de entorno
+│   └── package.json
+├── services/               # Servicios Python opcionales
+└── README.md
 ```
 
----
+## 🛠️ Instalación
 
-## 🚀 ¿Cómo Ejecutar el Prototipo Web?
+### Backend
 
-Para ver el prototipo interactivo con todo su diseño premium, simplemente abre el archivo `index.html` en cualquier navegador web moderno. 
+```bash
+cd backend
+npm install
+cp .env.example .env  # Configura tus variables
+npm run dev
+```
 
-También puedes ejecutar un servidor local rápido utilizando Python, Node.js o el servidor integrado de tu IDE. Por ejemplo:
+### Frontend
 
-**Con Python:**
+Abre `index.html` en un navegador o sirve con:
+
 ```bash
 python -m http.server 8000
+# o
+npx http-server -p 8000
 ```
-Luego accede a `http://localhost:8000` en tu navegador.
 
----
+## 🔧 Variables de Entorno
 
-## 📱 Guía de Integración en tu Proyecto Flutter
+Ver `backend/.env` para configuración completa. Las principales:
 
-Para trasladar esta lógica a tu aplicación Flutter real, sigue estos pasos:
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `PORT` | Puerto del servidor | `3001` |
+| `DB_TYPE` | `sqlite` o `postgres` | `sqlite` |
+| `JWT_SECRET` | Clave para tokens JWT | (requerido) |
+| `FUTINVEST_ENABLED` | Motor de arbitraje activo | `true` |
+| `FUTINVEST_AUTO_EXECUTE` | Ejecución automática | `false` |
+| `FUTINVEST_MIN_PROFIT_USD` | Ganancia mínima | `1.0` |
+| `FUTINVEST_PLATFORM_FEE_PERCENT` | Fee de plataforma | `10` |
 
-1. **Dependencias Requeridas:**
-   Asegúrate de agregar las siguientes dependencias en tu archivo `pubspec.yaml`:
-   ```yaml
-   dependencies:
-     flutter:
-       sdk: flutter
-     flutter_secure_storage: ^9.0.0 # Para el almacenamiento de hardware seguro
-     encrypt: ^5.0.3                # Para cifrado AES-256 GCM
-   ```
+## 🧪 Tests
 
-2. **Copiado de Archivos:**
-   Copia directamente el contenido de la carpeta `lib/` de este directorio e incorpóralo en la carpeta `lib/` de tu proyecto de Flutter.
+```bash
+cd backend
+npm test
+```
 
-3. **Configuración de Temas:**
-   En tu archivo `lib/main.dart`, inicializa tu aplicación usando el tema definido en `FutInvestTheme`:
-   ```dart
-   import 'package:flutter/material.dart';
-   import 'theme/app_theme.dart';
-   import 'screens/dashboard_screen.dart';
+## 📡 API
 
-   void main() {
-     runApp(const MyApp());
-   }
+Documentación Swagger disponible en `/api/docs` cuando el servidor está corriendo.
 
-   class MyApp extends StatelessWidget {
-     const MyApp({super.key});
+## 🚀 Deployment
 
-     @override
-     Widget build(BuildContext context) {
-       return MaterialApp(
-         title: 'fut.invest',
-         theme: FutInvestTheme.light, // Aplicación del tema de la marca
-         home: const DashboardScreen(),
-       );
-     }
-   }
-   ```
+1. Configura `NODE_ENV=production`
+2. Genera secretos seguros: `openssl rand -base64 48`
+3. Configura base de datos PostgreSQL (opcional)
+4. Habilita HTTPS con certificados SSL
+5. Configura SMTP para emails
 
----
+## 📄 Licencia
 
-## ✨ Características Especiales del Prototipo Web
-- **Dashboard en Vivo:** El balance y el porcentaje de ROI diario (rango de 1.5% a 2.5%) fluctúan dinámicamente en tiempo real cada 4 segundos.
-- **Calculadora ROI Interactiva:** Te permite deslizar un monto para ver las ganancias estimadas de forma inmediata.
-- **Validador de Billeteras Regex:** Compara en tiempo real tus direcciones BTC, USDT ERC-20 y USDT TRC-20 con expresiones regulares, habilitando o bloqueando las opciones de pago según la validez del monedero.
-- **Cifrador AES-256 en Vivo:** Simula el cifrado local a nivel de bytes, permitiéndote ingresar texto, ver el criptograma resultante y descifrarlo en vivo.
-- **2FA TOTP Simulator:** Simula un token autenticador real con códigos de 6 dígitos que expiran y cambian automáticamente cada 30 segundos con una barra de carga decreciente.
-- **Árbol Binario Interactivo:** Canvas SVG adaptativo que permite hacer Zoom (acercar/alejar/restablecer) y Paneo (arrastrar) sobre la red organizacional. Al hacer clic en cualquier miembro de la red, verás sus puntos acumulados en el HUD dinámico del panel izquierdo.
-- **Flutter Code Hub:** Un explorador de código interactivo integrado que te permite visualizar los archivos `.dart` físicos del proyecto y copiarlos con un solo clic.
+Privado — fut.invest © 2024

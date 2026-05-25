@@ -1,6 +1,3 @@
-// ============================================
-// Wallet Controller (with Balance Lock + Withdrawal Queue)
-// ============================================
 const db = require('../config/database');
 const logger = require('../config/logger');
 const { auditLog } = require('../middleware/audit');
@@ -17,84 +14,73 @@ const ASSET_REGEX = {
     USDT_ERC20: /^0x[a-fA-F0-9]{40}$/,
 };
 
-/* unused
-function getTransaction() {
-    return db.transaction(() => {});
-}
-*/
+async function withdraw(req, res) {
+    try {
+        const userId = req.user.userId;
+        const { asset, address, amount } = req.body;
 
-function withdraw(req, res) {
-    const userId = req.user.userId;
-    const { asset, address, amount } = req.body;
-
-    if (!asset || !address || !amount) {
-        return res.status(400).json({ error: 'Activo, dirección y monto requeridos' });
-    }
-
-    const regex = ASSET_REGEX[asset];
-    if (!regex) return res.status(400).json({ error: 'Activo no soportado' });
-    if (!regex.test(address)) return res.status(400).json({ error: 'Dirección inválida' });
-
-    const parsedAmount = parseFloat(amount);
-    if (isNaN(parsedAmount) || parsedAmount <= 0) return res.status(400).json({ error: 'Monto inválido' });
-
-    const networkInfo = ASSET_NETWORK_MAP[asset];
-    const feeCfg = db.prepare(
-        'SELECT * FROM fee_config WHERE asset = ? AND network = ? AND active = 1'
-    ).get(networkInfo.asset, networkInfo.network);
-
-    const minWithdrawal = feeCfg?.min_withdrawal || parseFloat(process.env.MIN_WITHDRAWAL || 10);
-    if (parsedAmount < minWithdrawal) {
-        return res.status(400).json({ error: `El monto mínimo es $${minWithdrawal}` });
-    }
-
-    const maxDaily = parseFloat(process.env.MAX_WITHDRAWAL_PER_DAY || 50000);
-    const todayTotal = db.prepare(
-        "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE user_id = ? AND type = 'withdraw' AND date(created_at) = date('now')"
-    ).get(userId);
-    if (todayTotal.total + parsedAmount > maxDaily) {
-        return res.status(400).json({ error: `Límite diario excedido (máximo $${maxDaily})` });
-    }
-
-    // KYC check
-    const user = db.prepare('SELECT kyc_status FROM users WHERE id = ?').get(userId);
-    if (user?.kyc_status !== 'approved') {
-        return res.status(403).json({ error: 'KYC requerido para realizar retiros' });
-    }
-
-    const fee = feeCfg?.withdrawal_fee || 0;
-    const netAmount = parsedAmount - fee;
-
-    // BEGIN IMMEDIATE transaction (balance lock)
-    const withdrawalTx = db.transaction(() => {
-        const account = db.prepare('SELECT balance FROM accounts WHERE user_id = ?').get(userId);
-        if (!account || account.balance < parsedAmount) {
-            throw new Error('Fondos insuficientes');
+        if (!asset || !address || !amount) {
+            return res.status(400).json({ error: 'Activo, dirección y monto requeridos' });
         }
 
-        // Create transaction record
-        const txResult = db.prepare(
-            `INSERT INTO transactions (user_id, type, asset, amount, fee, status, wallet_address, metadata)
-             VALUES (?, 'withdraw', ?, ?, ?, 'pending', ?, ?)`
-        ).run(userId, asset, parsedAmount, fee, address, JSON.stringify({ requestedAt: new Date().toISOString() }));
+        const regex = ASSET_REGEX[asset];
+        if (!regex) return res.status(400).json({ error: 'Activo no soportado' });
+        if (!regex.test(address)) return res.status(400).json({ error: 'Dirección inválida' });
 
-        // Create withdrawal queue entry
-        const queueResult = db.prepare(
-            `INSERT INTO withdrawal_queue (user_id, transaction_id, asset, amount, address, fee, status)
-             VALUES (?, ?, ?, ?, ?, ?, 'pending')`
-        ).run(userId, txResult.lastInsertRowid, asset, netAmount, address, fee);
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) return res.status(400).json({ error: 'Monto inválido' });
 
-        // Deduct balance (includes fee)
-        db.prepare(
-            'UPDATE accounts SET balance = balance - ?, updated_at = datetime(\'now\') WHERE user_id = ?'
-        ).run(parsedAmount, userId);
+        const networkInfo = ASSET_NETWORK_MAP[asset];
+        const feeCfg = await db.prepare(
+            'SELECT * FROM fee_config WHERE asset = $1 AND network = $2 AND active = TRUE'
+        ).get(networkInfo.asset, networkInfo.network);
 
-        auditLog(userId, 'withdrawal_requested', 'withdrawal_queue', queueResult.lastInsertRowid,
-            null, { amount: parsedAmount, fee, netAmount, asset, address }, null, null);
-    });
+        const minWithdrawal = feeCfg?.min_withdrawal || parseFloat(process.env.MIN_WITHDRAWAL || 10);
+        if (parsedAmount < minWithdrawal) {
+            return res.status(400).json({ error: `El monto mínimo es $${minWithdrawal}` });
+        }
 
-    try {
-        withdrawalTx();
+        const maxDaily = parseFloat(process.env.MAX_WITHDRAWAL_PER_DAY || 50000);
+        const todayTotal = await db.prepare(
+            "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE user_id = $1 AND type = 'withdraw' AND DATE(created_at) = CURRENT_DATE"
+        ).get(userId);
+        if (todayTotal.total + parsedAmount > maxDaily) {
+            return res.status(400).json({ error: `Límite diario excedido (máximo $${maxDaily})` });
+        }
+
+        const user = await db.prepare('SELECT kyc_status FROM users WHERE id = $1').get(userId);
+        if (user?.kyc_status !== 'approved') {
+            return res.status(403).json({ error: 'KYC requerido para realizar retiros' });
+        }
+
+        const fee = feeCfg?.withdrawal_fee || 0;
+        const netAmount = parsedAmount - fee;
+
+        const withdrawalTx = db.transaction(async () => {
+            const account = await db.prepare('SELECT balance FROM accounts WHERE user_id = $1').get(userId);
+            if (!account || account.balance < parsedAmount) {
+                throw new Error('Fondos insuficientes');
+            }
+
+            const txResult = await db.prepare(
+                `INSERT INTO transactions (user_id, type, asset, amount, fee, status, wallet_address, metadata)
+                 VALUES ($1, 'withdraw', $2, $3, $4, 'pending', $5, $6)`
+            ).run(userId, asset, parsedAmount, fee, address, JSON.stringify({ requestedAt: new Date().toISOString() }));
+
+            const queueResult = await db.prepare(
+                `INSERT INTO withdrawal_queue (user_id, transaction_id, asset, amount, address, fee, status)
+                 VALUES ($1, $2, $3, $4, $5, $6, 'pending')`
+            ).run(userId, txResult.lastInsertRowid, asset, netAmount, address, fee);
+
+            await db.prepare(
+                'UPDATE accounts SET balance = balance - $1, updated_at = NOW() WHERE user_id = $2'
+            ).run(parsedAmount, userId);
+
+            auditLog(userId, 'withdrawal_requested', 'withdrawal_queue', queueResult.lastInsertRowid,
+                null, { amount: parsedAmount, fee, netAmount, asset, address }, null, null);
+        });
+
+        await withdrawalTx();
         res.json({
             success: true,
             message: `Solicitud de retiro de $${parsedAmount} USD creada (comisión: $${fee}, neto: $${netAmount}). Pendiente de aprobación.`
@@ -108,28 +94,29 @@ function withdraw(req, res) {
     }
 }
 
-function deposit(req, res) {
-    const userId = req.user.userId;
-    const { asset, amount } = req.body;
+async function deposit(req, res) {
+    try {
+        const userId = req.user.userId;
+        const { asset, amount } = req.body;
 
-    if (!asset) return res.status(400).json({ error: 'Activo requerido' });
+        if (!asset) return res.status(400).json({ error: 'Activo requerido' });
 
-    const amountVal = amount ? parseFloat(amount) : 0;
-    if (amount && (isNaN(amountVal) || amountVal <= 0)) {
-        return res.status(400).json({ error: 'Monto inválido' });
-    }
+        const amountVal = amount ? parseFloat(amount) : 0;
+        if (amount && (isNaN(amountVal) || amountVal <= 0)) {
+            return res.status(400).json({ error: 'Monto inválido' });
+        }
 
-    // Generate unique address via payment provider
-    const provider = require('../adapters/paymentProvider');
-    provider.generateAddress(asset, userId).then(result => {
-        const txResult = db.prepare(
+        const provider = require('../adapters/paymentProvider');
+        const result = await provider.generateAddress(asset, userId);
+
+        const txResult = await db.prepare(
             `INSERT INTO transactions (user_id, type, asset, amount, status, wallet_address, provider, metadata)
-             VALUES (?, 'deposit', ?, ?, 'pending', ?, ?, ?)`
+             VALUES ($1, 'deposit', $2, $3, 'pending', $4, $5, $6)`
         ).run(userId, asset, amountVal, result.address, result.provider,
             JSON.stringify({ generatedAt: new Date().toISOString() }));
 
-        db.prepare(
-            'INSERT INTO payment_addresses (user_id, asset, address, provider) VALUES (?, ?, ?, ?)'
+        await db.prepare(
+            'INSERT INTO payment_addresses (user_id, asset, address, provider) VALUES ($1, $2, $3, $4)'
         ).run(userId, asset, result.address, result.provider);
 
         auditLog(userId, 'deposit_address_generated', 'payment_address', txResult.lastInsertRowid,
@@ -142,27 +129,35 @@ function deposit(req, res) {
             transactionId: txResult.lastInsertRowid,
             message: `Dirección de depósito generada para ${asset}. Envía los fondos a la dirección indicada.`
         });
-    }).catch(err => {
+    } catch (err) {
         logger.error('Error generando dirección:', err);
         res.status(502).json({ error: 'Error del proveedor de pagos' });
-    });
+    }
 }
 
-function getTransactions(req, res) {
-    const userId = req.user.userId;
-    const { limit = 20, offset = 0, type, status } = req.query;
+async function getTransactions(req, res) {
+    try {
+        const userId = req.user.userId;
+        const { limit = 20, offset = 0, type, status } = req.query;
 
-    let query = 'SELECT * FROM transactions WHERE user_id = ?';
-    const params = [userId];
+        const parsedLimit = Math.min(Math.max(parseInt(limit) || 20, 1), 100);
+        const parsedOffset = Math.max(parseInt(offset) || 0, 0);
 
-    if (type) { query += ' AND type = ?'; params.push(type); }
-    if (status) { query += ' AND status = ?'; params.push(status); }
+        let query = 'SELECT * FROM transactions WHERE user_id = $1';
+        const params = [userId];
 
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), parseInt(offset));
+        if (type) { query += ' AND type = $2'; params.push(type); }
+        if (status) { query += type ? ' AND status = $3' : ' AND status = $2'; params.push(status); }
 
-    const transactions = db.prepare(query).all(...params);
-    res.json({ transactions, limit: parseInt(limit), offset: parseInt(offset) });
+        query += ' ORDER BY created_at DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
+        params.push(parsedLimit, parsedOffset);
+
+        const transactions = await db.prepare(query).all(...params);
+        res.json({ transactions, limit: parsedLimit, offset: parsedOffset });
+    } catch (err) {
+        logger.error('Error en getTransactions:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 }
 
 module.exports = { withdraw, deposit, getTransactions };

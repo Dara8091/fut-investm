@@ -1,0 +1,185 @@
+
+Running 19 tests using 1 worker
+
+[2m[WebServer] [22m(node:9800) [DEP0066] DeprecationWarning: OutgoingMessage.prototype._headers is deprecated
+[2m[WebServer] [22m(Use `node --trace-deprecation ...` to show where the warning was created)
+  ok  1 auth-flow.spec.js:12:5 › fut.invest — Flujo de Autenticación › Muestra modal de login al cargar (3.0s)
+  ok  2 auth-flow.spec.js:17:5 › fut.invest — Flujo de Autenticación › Cambia a modo registro (2.4s)
+  ok  3 auth-flow.spec.js:23:5 › fut.invest — Flujo de Autenticación › Error con credenciales inválidas (8.8s)
+  ok  4 auth-flow.spec.js:38:5 › fut.invest — Flujo de Autenticación › Login exitoso con demo (3.8s)
+  ok  5 auth-flow.spec.js:47:5 › fut.invest — Flujo de Autenticación › Continúa como invitado (Demo Local) (2.5s)
+  ok  6 auth-flow.spec.js:53:5 › fut.invest — Flujo de Autenticación › Dashboard muestra balance y ROI después de login (4.2s)
+  x   7 auth-flow.spec.js:62:5 › fut.invest — Flujo de Autenticación › Navega entre tabs (1.0m)
+  x   8 auth-flow.spec.js:73:5 › fut.invest — Flujo de Autenticación › Alterna modo oscuro (8.1s)
+  x   9 auth-flow.spec.js:95:5 › fut.invest — Payment Flow › Muestra sección de billetera después de login (1.0m)
+  x  10 auth-flow.spec.js:102:5 › fut.invest — Payment Flow › Genera dirección de depósito (1.0m)
+  x  11 auth-flow.spec.js:115:5 › fut.invest — Payment Flow › Cambia a sub-tab de retiro (1.0m)
+  x  12 auth-flow.spec.js:121:5 › fut.invest — Payment Flow › Solicitud de retiro con datos inválidos muestra error (1.0m)
+  ok 13 auth-flow.spec.js:143:5 › fut.invest — Admin Panel › Admin tab no visible para usuario normal (4.7s)
+  ok 14 auth-flow.spec.js:150:5 › fut.invest — API Health › Backend health endpoint responde (123ms)
+  ok 15 auth-flow.spec.js:157:5 › fut.invest — API Health › Login API con credenciales demo (350ms)
+  ok 16 auth-flow.spec.js:168:5 › fut.invest — API Health › Dashboard API retorna datos después de login (253ms)
+  ok 17 auth-flow.spec.js:183:5 › fut.invest — API Health › Wallet API retorna transacciones (240ms)
+  ok 18 auth-flow.spec.js:197:5 › fut.invest — API Health › Payment quote API retorna cotización (227ms)
+  ok 19 auth-flow.spec.js:213:5 › fut.invest — API Health › Admin API rechaza usuario sin rol admin (222ms)
+
+
+  1) auth-flow.spec.js:62:5 › fut.invest — Flujo de Autenticación › Navega entre tabs ──────────────
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#btn-tab-wallet')[22m
+
+
+      62 |     test('Navega entre tabs', async ({ page }) => {
+      63 |         await page.click('#auth-skip-btn');
+    > 64 |         await page.click('#btn-tab-wallet');
+         |                    ^
+      65 |         await expect(page.locator('#tab-wallet')).toBeVisible();
+      66 |         await expect(page.locator('#current-page-title')).toContainText('Billetera');
+      67 |
+        at C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\e2e\auth-flow.spec.js:64:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-flow-fut-invest-—-Flu-11ac3-nticación-Navega-entre-tabs\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-flow-fut-invest-—-Flu-11ac3-nticación-Navega-entre-tabs\error-context.md
+
+  2) auth-flow.spec.js:73:5 › fut.invest — Flujo de Autenticación › Alterna modo oscuro ────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveAttribute[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('html')
+    Expected: [32m"dark"[39m
+    Received: [31m"light"[39m
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toHaveAttribute" with timeout 5000ms[22m
+    [2m  - waiting for locator('html')[22m
+    [2m    13 × locator resolved to <html lang="es" data-theme="light">…</html>[22m
+    [2m       - unexpected value "light"[22m
+
+
+      76 |         await expect(themeToggle).toBeVisible();
+      77 |         await themeToggle.click();
+    > 78 |         await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+         |                                            ^
+      79 |         await themeToggle.click();
+      80 |         await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+      81 |     });
+        at C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\e2e\auth-flow.spec.js:78:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-flow-fut-invest-—-Flu-c6a12-icación-Alterna-modo-oscuro\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-flow-fut-invest-—-Flu-c6a12-icación-Alterna-modo-oscuro\error-context.md
+
+  3) auth-flow.spec.js:95:5 › fut.invest — Payment Flow › Muestra sección de billetera después de login 
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#btn-tab-wallet')[22m
+
+
+      94 |
+      95 |     test('Muestra sección de billetera después de login', async ({ page }) => {
+    > 96 |         await page.click('#btn-tab-wallet');
+         |                    ^
+      97 |         await expect(page.locator('#tab-wallet')).toBeVisible();
+      98 |         // Default active sub-tab is "Retiro y Liquidación" (withdraw)
+      99 |         await expect(page.locator('.wallet-sub-tab.active')).toContainText('Retiro');
+        at C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\e2e\auth-flow.spec.js:96:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-flow-fut-invest-—-Pay-abea1--billetera-después-de-login\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-flow-fut-invest-—-Pay-abea1--billetera-después-de-login\error-context.md
+
+  4) auth-flow.spec.js:102:5 › fut.invest — Payment Flow › Genera dirección de depósito ────────────
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#btn-tab-wallet')[22m
+
+
+      101 |
+      102 |     test('Genera dirección de depósito', async ({ page }) => {
+    > 103 |         await page.click('#btn-tab-wallet');
+          |                    ^
+      104 |         // Switch to deposit sub-tab first
+      105 |         await page.click('#sub-tab-deposit-btn');
+      106 |         await page.waitForTimeout(1000);
+        at C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\e2e\auth-flow.spec.js:103:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-flow-fut-invest-—-Pay-b57e3-enera-dirección-de-depósito\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-flow-fut-invest-—-Pay-b57e3-enera-dirección-de-depósito\error-context.md
+
+  5) auth-flow.spec.js:115:5 › fut.invest — Payment Flow › Cambia a sub-tab de retiro ──────────────
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#btn-tab-wallet')[22m
+
+
+      114 |
+      115 |     test('Cambia a sub-tab de retiro', async ({ page }) => {
+    > 116 |         await page.click('#btn-tab-wallet');
+          |                    ^
+      117 |         await page.click('#sub-tab-withdraw-btn');
+      118 |         await expect(page.locator('#wallet-withdraw-content')).toBeVisible();
+      119 |     });
+        at C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\e2e\auth-flow.spec.js:116:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-flow-fut-invest-—-Pay-94af4--Cambia-a-sub-tab-de-retiro\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-flow-fut-invest-—-Pay-94af4--Cambia-a-sub-tab-de-retiro\error-context.md
+
+  6) auth-flow.spec.js:121:5 › fut.invest — Payment Flow › Solicitud de retiro con datos inválidos muestra error 
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#btn-tab-wallet')[22m
+
+
+      120 |
+      121 |     test('Solicitud de retiro con datos inválidos muestra error', async ({ page }) => {
+    > 122 |         await page.click('#btn-tab-wallet');
+          |                    ^
+      123 |         const withdrawTab = page.locator('#sub-tab-withdraw-btn');
+      124 |         await withdrawTab.click();
+      125 |         // Invalid address (too short) with valid amount
+        at C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\e2e\auth-flow.spec.js:122:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\auth-flow-fut-invest-—-Pay-a889b-tos-inválidos-muestra-error\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\auth-flow-fut-invest-—-Pay-a889b-tos-inválidos-muestra-error\error-context.md
+
+  6 failed
+    auth-flow.spec.js:62:5 › fut.invest — Flujo de Autenticación › Navega entre tabs ───────────────
+    auth-flow.spec.js:73:5 › fut.invest — Flujo de Autenticación › Alterna modo oscuro ─────────────
+    auth-flow.spec.js:95:5 › fut.invest — Payment Flow › Muestra sección de billetera después de login 
+    auth-flow.spec.js:102:5 › fut.invest — Payment Flow › Genera dirección de depósito ─────────────
+    auth-flow.spec.js:115:5 › fut.invest — Payment Flow › Cambia a sub-tab de retiro ───────────────
+    auth-flow.spec.js:121:5 › fut.invest — Payment Flow › Solicitud de retiro con datos inválidos muestra error 
+  13 passed (6.5m)

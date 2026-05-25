@@ -5,11 +5,12 @@ const {
     approveWithdrawal, rejectWithdrawal,
     getFeeConfig, updateFeeConfig, getUserList, getDashboardStats
 } = require('../controllers/adminController');
+const { adminLimiter, feeConfigLimiter, perRouteUserLimiter } = require('../middleware/rateLimit');
 
 const router = Router();
 
 // All admin routes require auth + admin role
-router.use(authenticate, requireAdmin);
+router.use(authenticate, requireAdmin, perRouteUserLimiter, adminLimiter);
 
 /**
  * @swagger
@@ -69,7 +70,7 @@ router.get('/fees', getFeeConfig);
  *     summary: Actualizar fee config
  *     security: [{ bearerAuth: [] }]
  */
-router.patch('/fees/:id', updateFeeConfig);
+router.patch('/fees/:id', feeConfigLimiter, updateFeeConfig);
 
 /**
  * @swagger

@@ -1,10 +1,12 @@
 const { Router } = require('express');
 const db = require('../config/database');
 const { authenticate } = require('../middleware/auth');
+const { rls } = require('../middleware/rls');
+const { onboardingLimiter, perRouteUserLimiter } = require('../middleware/rateLimit');
 
 const router = Router();
 
-router.get('/progress', authenticate, (req, res) => {
+router.get('/progress', authenticate, rls, perRouteUserLimiter, onboardingLimiter, (req, res) => {
     const progress = db.prepare('SELECT * FROM onboarding_progress WHERE user_id = ?').get(req.user.userId);
     if (!progress) {
         db.prepare('INSERT INTO onboarding_progress (user_id) VALUES (?)').run(req.user.userId);
@@ -15,7 +17,7 @@ router.get('/progress', authenticate, (req, res) => {
     res.json({ progress });
 });
 
-router.post('/step', authenticate, (req, res) => {
+router.post('/step', authenticate, rls, perRouteUserLimiter, onboardingLimiter, (req, res) => {
     const { step } = req.body;
     const validSteps = ['step_welcome', 'step_profile', 'step_deposit', 'step_kyc', 'step_contract'];
     if (!validSteps.includes(step)) {

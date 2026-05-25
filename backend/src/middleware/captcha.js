@@ -7,8 +7,8 @@ async function verifyCaptcha(token) {
 
     const secret = process.env.RECAPTCHA_SECRET_KEY;
     if (!secret) {
-        logger.warn('CAPTCHA: RECAPTCHA_SECRET_KEY no configurado');
-        return true; // skip si no hay config
+        logger.error('CAPTCHA: RECAPTCHA_SECRET_KEY no configurado — registro bloqueado por seguridad');
+        return false; // bloquear si no hay config (fail-secure)
     }
 
     try {

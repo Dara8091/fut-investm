@@ -4,19 +4,20 @@ const {
     forgotPassword, resetPassword, me
 } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
+const { rls } = require('../middleware/rls');
 const { registerRules, loginRules, handleValidationErrors } = require('../middleware/validate');
-const { forgotPasswordLimiter, resetPasswordLimiter } = require('../middleware/rateLimit');
+const { authLimiter, registerLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter, emailResendLimiter, perRouteUserLimiter } = require('../middleware/rateLimit');
 const { lockoutMiddleware } = require('../middleware/lockout');
 
 const router = Router();
 
-router.post('/register', registerRules, handleValidationErrors, register);
-router.post('/login', lockoutMiddleware, loginRules, handleValidationErrors, login);
-router.post('/refresh', refresh);
+router.post('/register', registerLimiter, registerRules, handleValidationErrors, register);
+router.post('/login', authLimiter, lockoutMiddleware, loginRules, handleValidationErrors, login);
+router.post('/refresh', refreshLimiter, refresh);
 router.post('/verify-email', verifyEmail);
-router.post('/resend-verification', resendVerification);
+router.post('/resend-verification', emailResendLimiter, resendVerification);
 router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
 router.post('/reset-password', resetPasswordLimiter, resetPassword);
-router.get('/me', authenticate, me);
+router.get('/me', authenticate, rls, perRouteUserLimiter, me);
 
 module.exports = router;

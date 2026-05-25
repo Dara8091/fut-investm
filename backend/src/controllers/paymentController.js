@@ -186,42 +186,47 @@ function getDepositStatus(req, res) {
 // -------------------------------------------------------
 // Cotización de retiro (fee + net amount)
 // -------------------------------------------------------
-function quoteWithdrawal(req, res) {
-    const { asset, network, amount } = req.body;
+async function quoteWithdrawal(req, res) {
+    try {
+        const { asset, network, amount } = req.body;
 
-    if (!asset || !network || !amount) {
-        return res.status(400).json({ error: 'asset, network y amount requeridos' });
+        if (!asset || !network || !amount) {
+            return res.status(400).json({ error: 'asset, network y amount requeridos' });
+        }
+
+        const parsed = parseFloat(amount);
+        if (isNaN(parsed) || parsed <= 0) {
+            return res.status(400).json({ error: 'Monto inválido' });
+        }
+
+        const config = await db.prepare(
+            'SELECT * FROM fee_config WHERE asset = $1 AND network = $2 AND active = TRUE'
+        ).get(asset, network);
+
+        if (!config) {
+            return res.status(400).json({ error: 'Red no soportada para este activo' });
+        }
+
+        if (parsed < config.min_withdrawal) {
+            return res.status(400).json({ error: `Monto mínimo: ${config.min_withdrawal} ${asset}` });
+        }
+
+        const fee = config.withdrawal_fee;
+        const netAmount = parsed - fee;
+
+        res.json({
+            asset,
+            network,
+            grossAmount: parsed,
+            fee,
+            netAmount,
+            minWithdrawal: config.min_withdrawal,
+            maxWithdrawal: config.max_withdrawal,
+        });
+    } catch (err) {
+        logger.error('Error en quoteWithdrawal:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
-
-    const parsed = parseFloat(amount);
-    if (isNaN(parsed) || parsed <= 0) {
-        return res.status(400).json({ error: 'Monto inválido' });
-    }
-
-    const config = db.prepare(
-        'SELECT * FROM fee_config WHERE asset = ? AND network = ? AND active = 1'
-    ).get(asset, network);
-
-    if (!config) {
-        return res.status(400).json({ error: 'Red no soportada para este activo' });
-    }
-
-    if (parsed < config.min_withdrawal) {
-        return res.status(400).json({ error: `Monto mínimo: ${config.min_withdrawal} ${asset}` });
-    }
-
-    const fee = config.withdrawal_fee;
-    const netAmount = parsed - fee;
-
-    res.json({
-        asset,
-        network,
-        grossAmount: parsed,
-        fee,
-        netAmount,
-        minWithdrawal: config.min_withdrawal,
-        maxWithdrawal: config.max_withdrawal,
-    });
 }
 
 // -------------------------------------------------------

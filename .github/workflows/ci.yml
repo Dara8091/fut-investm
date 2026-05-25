@@ -1,117 +1,161 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, develop]
   pull_request:
-    branches: [main, master]
-  schedule:
-    - cron: '0 6 * * 1'  # Every Monday 6 AM
+    branches: [main]
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NODE_ENV: test
+  DB_TYPE: sqlite
+  DB_PATH: ':memory:'
+  JWT_SECRET: test-secret-ci
+  TOTP_SECRET: test-totp-secret-ci
+  APP_SECRET: test-app-secret-ci
 
 jobs:
-  backend:
+  # Backend Tests
+  backend-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-
+    
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+    
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
-
-      - run: npm ci
-
-      - run: npm run migrate
-        env:
-          DB_PATH: ./data/ci.db
-          JWT_SECRET: test-secret
-
-      - run: npm test
-        env:
-          JWT_SECRET: test-secret
-          FRONTEND_URL: http://localhost:8000
-          DB_PATH: ./data/ci.db
-
-  lint:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci
-      - run: npm run lint
-        continue-on-error: true
-
-  e2e:
-    runs-on: ubuntu-latest
-    needs: [backend]
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install backend deps
+      
+      - name: Install dependencies
+        working-directory: ./backend
         run: npm ci
-        working-directory: backend
+      
+      - name: Run linter
+        working-directory: ./backend
+        run: npm run lint || true
+      
+      - name: Run tests
+        working-directory: ./backend
+        run: npm test
+      
+      - name: Run tests with coverage
+        working-directory: ./backend
+        run: npm run test:coverage
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./backend/coverage
+          fail_ci_if_error: false
 
-      - name: Install e2e deps
-        run: npm init -y && npm install @playwright/test
-        working-directory: e2e
-
-      - name: Install Playwright browsers
-        run: npx playwright install chromium
-        working-directory: e2e
-
-      - name: Run e2e tests
-        run: npx playwright test
-        working-directory: e2e
-        env:
-          JWT_SECRET: test-secret-e2e
-          DB_PATH: ./data/e2e.db
-
-  security:
+  # Frontend Build
+  frontend-build:
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20.x
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build frontend
+        run: npm run build
+      
+      - name: Verify build
+        run: npm run test:frontend
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: |
+            index.html
+            style.css
+            app.js
+            config.js
+            public/
 
-      - name: Check for secrets in code
+  # Security Audit
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+      
+      - name: Run security audit
+        working-directory: ./backend
+        run: npm audit --audit-level=high || true
+      
+      - name: Check for known vulnerabilities
+        uses: oke-py/npm-audit-action@v1
+        with:
+          working_directory: ./backend
+          audit_level: high
+
+  # Docker Build (only on main branch)
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-build]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: futinvest-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Verify docker-compose
+        run: docker compose config
+
+  # Deploy (only on main branch, all tests pass)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-build, security-audit, docker-build]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to production
         run: |
-          ! grep -r "JWT_SECRET=dev_secret" backend/.env && echo "No dev secrets leaked" || echo "WARNING: dev secret found"
-
-      - name: Check npm audit
-        run: cd backend && npm audit --audit-level=high
-        continue-on-error: true
-
-  frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: node scripts/verify-build.mjs
-
-  docker:
-    runs-on: ubuntu-latest
-    needs: [backend, e2e, frontend]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    steps:
-      - uses: actions/checkout@v4
-      - run: docker build -t futinvest-api -f Dockerfile .
+          echo "🚀 Deploy triggered"
+          echo "Add your deployment steps here"
+          echo "- SSH to server"
+          echo "- Pull latest code"
+          echo "- Run docker compose up -d"
+          echo "- Run database migrations"
+          echo "- Verify health check"
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}

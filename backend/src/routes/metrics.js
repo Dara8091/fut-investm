@@ -2,10 +2,11 @@ const { Router } = require('express');
 const db = require('../config/database');
 const { authenticate } = require('../middleware/auth');
 const { requireAdmin } = require('../controllers/adminController');
+const { metricsLimiter, perRouteUserLimiter } = require('../middleware/rateLimit');
 
 const router = Router();
 
-router.use(authenticate, requireAdmin);
+router.use(authenticate, requireAdmin, perRouteUserLimiter, metricsLimiter);
 
 router.get('/hourly', (req, res) => {
     const { hours = 24 } = req.query;

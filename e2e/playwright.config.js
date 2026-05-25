@@ -19,7 +19,7 @@ module.exports = defineConfig({
             reuseExistingServer: true,
         },
         {
-            command: "node -e \"require('./src/db/migrate')\" && node src/index.js",
+            command: 'node backend-start.js',
             port: 3001,
             cwd: path.join(__dirname, '../backend'),
             reuseExistingServer: true,

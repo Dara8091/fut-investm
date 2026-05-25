@@ -24,6 +24,9 @@ const securityRoutes = require('./routes/security');
 // const _networkRoutes = require('./routes/network');
 const paymentRoutes = require('./routes/payment');
 const adminRoutes = require('./routes/admin');
+const paykaRoutes = require('./routes/payka');
+const futinvestRoutes = require('./routes/futinvest');
+const futinvestProfileRoutes = require('./routes/futinvestProfile');
 const onboardingRoutes = require('./routes/onboarding');
 const metricsRoutes = require('./routes/metrics');
 const settingsRoutes = require('./routes/settings');
@@ -36,6 +39,41 @@ const { runMigrations } = require('./db/migrations');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const isProduction = process.env.NODE_ENV === 'production';
+
+// ============================================
+// Startup Security Checks
+// ============================================
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'change_me_in_production') {
+    if (isProduction) {
+        logger.error('FATAL: JWT_SECRET no configurado o usa valor por defecto. Genera uno con: openssl rand -base64 48');
+        process.exit(1);
+    }
+    logger.warn('JWT_SECRET no configurado — usando default (SOLO para desarrollo)');
+    process.env.JWT_SECRET = 'dev-secret-do-not-use-in-production';
+}
+
+if (!process.env.TOTP_SECRET || process.env.TOTP_SECRET === 'change_me_in_production') {
+    if (isProduction) {
+        logger.error('FATAL: TOTP_SECRET no configurado. Genera uno con: openssl rand -base64 32');
+        process.exit(1);
+    }
+    logger.warn('TOTP_SECRET no configurado — usando default (SOLO para desarrollo)');
+    process.env.TOTP_SECRET = 'dev-totp-secret-do-not-use-in-production';
+}
+
+if (!process.env.APP_SECRET || process.env.APP_SECRET === 'change_me_in_production') {
+    if (isProduction) {
+        logger.error('FATAL: APP_SECRET no configurado. Genera uno con: openssl rand -hex 32');
+        process.exit(1);
+    }
+    logger.warn('APP_SECRET no configurado — usando default (SOLO para desarrollo)');
+    process.env.APP_SECRET = 'dev-app-secret-do-not-use-in-production';
+}
+
+if (isProduction) {
+    logger.info('Security checks passed: JWT_SECRET, TOTP_SECRET, APP_SECRET configurados');
+}
 
 // ============================================
 // Sentry (error tracking)
@@ -49,7 +87,6 @@ if (process.env.SENTRY_DSN) {
 // ============================================
 // Security Middleware
 // ============================================
-const isProduction = process.env.NODE_ENV === 'production';
 const connectSrc = isProduction
     ? ["'self'", process.env.FRONTEND_URL || 'http://localhost:8000']
     : ["'self'", "ws:", "wss:", "http://localhost:*"];
@@ -84,6 +121,7 @@ if (isProduction) {
 const { correlationIdMiddleware } = require('./middleware/correlationId');
 const { wafMiddleware } = require('./middleware/waf');
 const csrfOriginCheck = require('./middleware/csrf');
+const { sanitizeInputs } = require('./middleware/sanitize');
 
 app.use(correlationIdMiddleware);
 
@@ -92,6 +130,9 @@ if (process.env.WAF_ENABLED !== 'false') {
 }
 
 app.use(express.json({ limit: '1mb' }));
+
+// Sanitize ALL user inputs (XSS, null bytes, control chars)
+app.use(sanitizeInputs);
 
 // ============================================
 // Static files (legal pages, docs)
@@ -115,19 +156,21 @@ const morganStream = { write: (message) => logger.http(message.trim()) };
 app.use(morgan('combined', { stream: morganStream }));
 
 // ============================================
-// CORS
+// CORS — SOLO origen desde FRONTEND_URL
 // ============================================
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:8000')
     .split(',').map(s => s.trim()).filter(Boolean);
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || process.env.NODE_ENV === 'development') return callback(null, true);
+        if (!origin) return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
+        logger.warn(`CORS bloqueado: ${origin} no está en FRONTEND_URL=${allowedOrigins.join(',')}`);
         return callback(new Error(`Origen no permitido: ${origin}`));
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key'],
+    exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
     credentials: true,
     maxAge: 86400
 }));
@@ -201,6 +244,9 @@ app.use('/api/payments/deposit', depositLimiter);
 app.use('/api/payments/webhook', webhookLimiter);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payka', paykaRoutes);
+app.use('/api/futinvest', futinvestRoutes);
+app.use('/api/futinvest-profile', futinvestProfileRoutes);
 app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/referrals', referralsRoutes);

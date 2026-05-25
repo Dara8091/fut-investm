@@ -1,6 +1,6 @@
 {
   "name": "futinvest",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "fut.invest - Panel de Inversión Institucional",
   "scripts": {
@@ -10,7 +10,11 @@
   },
   "devDependencies": {
     "html-minifier-terser": "^7.2.0",
+    "http-server": "^14.1.1",
     "lightningcss": "^1.28.0",
     "terser": "^5.37.0"
+  },
+  "dependencies": {
+    "localtunnel": "^2.0.2"
   }
 }

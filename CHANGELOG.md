@@ -1,65 +1,54 @@
 # Changelog
 
-## [1.0.0] - 2026-05-24
+Todos los cambios notables en este proyecto serán documentados en este archivo.
 
-### Added
-- Backend API completa: auth (register/login/refresh/verify-email/forgot-password/reset-password), dashboard, wallet, payments (deposit/withdraw/quote/webhook), admin (users/fees/stats/withdrawals/audit-logs), settings, referrals, onboarding, metrics
-- Frontend SPA vanilla: dashboard, wallet, security, network binario, Flutter Code Hub, settings, admin panel
-- API versioning (`/api/v1/`) con backward compat (`/api/`)
-- Rate limiting con Redis adapter (auth, api, user, deposit, withdraw, webhook, reset-password, forgot-password)
-- WAF: SQLi/XSS/path traversal + VPN/Proxy/Tor detection + geo-blocking + IP blacklist
-- Cifrado AES-256 GCM real (Web Crypto API)
-- TOTP real HMAC-SHA1 (RFC 6238)
-- JWT con refresh token rotation (accessToken 15m + refreshToken 7d)
-- Email verification obligatoria + forgot/reset password con tokens
-- 3 payment providers: Mock, Coinbase Commerce, Stripe (Strategy pattern)
-- PostgreSQL adapter con connection pooling
-- Redis cache layer + in-memory fallback
-- Vault integration para secrets management (HashiCorp Vault)
-- Captcha (reCAPTCHA v2) en register/login
-- In-app notifications via Socket.IO (depósitos, retiros, KYC)
-- KYC upload UI + backend endpoint con validación
-- Multi-currency support (USDT, BTC, ETH, USD)
-- CD pipeline: GitHub Actions build → staging → production
-- Smoke tests en deploy: health, login, dashboard, docs, metrics
-- k6 load test con stages 5→25→50→100→100 usuarios
-- Frontend tests (Jest + jsdom): i18n, auth, notifications, KYC
-- Diseño futurista: dark mode, glassmorphism, neon cyan/magenta
-- PWA: manifest.json, service-worker.js
-- i18n es/en
-- GDPR consent banner + cookie policy detallada
-- Términos y Condiciones + Política de Privacidad
-- Página 404 personalizada con diseño futurista
-- Sitemap.xml + robots.txt
-- OpenGraph tags + Twitter Cards
-- Sentry error tracking (backend + frontend)
-- Prometheus metrics (7 custom + histograma)
-- Grafana dashboard auto-provisioned
-- Alertas (error rate, latency, balance, CPU)
-- Docker: multi-stage, docker-compose (dev/staging/monitoring)
-- Kubernetes: deployment, service, ingress, HPA, configmap
-- Terraform CloudFlare: WAF, DNS, rate limiting, SSL/TLS
-- Migraciones versionadas con tabla `_migrations` y checksum SHA-256
-- Backup automático con verificación de integridad + restore script
-- Onboarding de 5 pasos con progreso persistente
-- Referral system (código único, 5% bonus primer depósito)
-- Web Push VAPID notifications
-- Accessibility: skip-link, ARIA labels, focus-visible, prefers-reduced-motion
-- Database encryption at rest docs (SQLCipher)
-- Audit log export (CSV/JSON) para cumplimiento
-- CDN configuration + asset fingerprinting
-- Lazy loading SPA modules via Intersection Observer
+El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
+y este proyecto sigue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### Changed
-- rateLimit.js: refactor completo con Redis/memory dual store
-- authController.js: referral_code generado automáticamente en register
-- dashboardController.js: multi-currency balances desde transacciones
-- index.js: WebSocket rate limit, migraciones automáticas, 404 SPA fallback
-- schema.sql: +10 nuevos índices
-- migrate.js: delegado a sistema de migraciones versionadas
-- backup.ps1: verificación post-backup con integrity_check
+## [2.0.0] - 2024-01-15
 
-### Fixed
-- Rate limiters ordering en index.js (deposit/webhook ahora aplican correctamente)
-- migrate.js sintaxis (stray brace)
-- CSP para Sentry CDN
+### ✨ Agregado
+- Motor de arbitraje FutInvest multi-exchange (Binance, OKX, Bybit, KuCoin, Gate.io)
+- Arbitraje triangular (USDT → BTC → ETH → USDT)
+- Perfil de usuario con sub-tabs: Resumen, FutInvest, Actividad, Seguridad, Ajustes
+- Sistema de referidos con códigos únicos y bonificaciones
+- KYC integrado con subida de documentos
+- Panel de administración completo
+- WebSocket para ROI en tiempo real
+- Rate limiting por usuario/ruta/IP
+- WAF (Web Application Firewall)
+- Soporte dual SQLite/PostgreSQL
+- Skeleton loaders y estados de carga
+- Empty states profesionales
+- Animaciones y transiciones mejoradas
+- Responsive design para móvil/tablet/desktop
+
+### 🔧 Cambiado
+- Rebranding de GoArbit a FutInvest
+- Rutas API actualizadas: `/api/futinvest`, `/api/futinvest-profile`
+- Variables de entorno renombradas: `GOARBIT_*` → `FUTINVEST_*`
+- Mejoras en manejo de errores UI
+- Transiciones de página más suaves
+
+### 🐛 Corregido
+- Doble deducción de balance en aprobación de retiros
+- Mismatch sync/async en verificación TOTP
+- Compatibilidad SQL `NOW()` → `datetime('now')` para SQLite
+- Validación de paginación
+
+### 🗑️ Eliminado
+- Referencias a GoArbit en frontend y backend
+
+---
+
+## [1.0.0] - 2023-12-01
+
+### ✨ Agregado
+- Dashboard con balance y ROI dinámico
+- Billetera con depósitos/retiros cripto
+- Centro de seguridad con AES-256 y TOTP 2FA
+- Árbol binario interactivo para red de referidos
+- Calculadora ROI interactiva
+- Validador de direcciones cripto con Regex
+- Simulador 2FA TOTP
+- Tema oscuro/claro

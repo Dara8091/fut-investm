@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const Database = require('better-sqlite3');
 const logger = require('./logger');
 
 const DB_TYPE = process.env.DB_TYPE || 'sqlite';
@@ -8,40 +7,64 @@ const DB_TYPE = process.env.DB_TYPE || 'sqlite';
 let db;
 
 if (DB_TYPE === 'postgres') {
-    // PostgreSQL adapter — preparado para migración
     const { Pool } = require('pg');
     const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
         max: 20,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 5000,
+        connectionTimeoutMillis: 10000,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     });
 
     db = {
+        _type: 'postgres',
         _pool: pool,
+
+        async exec(sql) {
+            await pool.query(sql);
+        },
+
         prepare(sql) {
             return {
-                run(...params) { return pool.query(sql, params); },
-                get(...params) {
-                    return pool.query(sql, params).then(r => r.rows[0] || null);
+                async run(...params) {
+                    const result = await pool.query(sql, params);
+                    return { lastInsertRowid: result.rows[0]?.id, changes: result.rowCount };
                 },
-                all(...params) {
-                    return pool.query(sql, params).then(r => r.rows);
+                async get(...params) {
+                    const result = await pool.query(sql, params);
+                    return result.rows[0] || null;
+                },
+                async all(...params) {
+                    const result = await pool.query(sql, params);
+                    return result.rows;
                 },
             };
         },
+
         transaction(fn) {
             return async (...args) => {
                 const client = await pool.connect();
                 try {
                     await client.query('BEGIN');
-                    // Wrap db methods with client
                     const txDb = {
+                        _type: 'postgres',
+                        async exec(sql) {
+                            await client.query(sql);
+                        },
                         prepare(sql) {
                             return {
-                                run(...params) { return client.query(sql, params); },
-                                get(...params) { return client.query(sql, params).then(r => r.rows[0] || null); },
-                                all(...params) { return client.query(sql, params).then(r => r.rows); },
+                                async run(...params) {
+                                    const result = await client.query(sql, params);
+                                    return { lastInsertRowid: result.rows[0]?.id, changes: result.rowCount };
+                                },
+                                async get(...params) {
+                                    const result = await client.query(sql, params);
+                                    return result.rows[0] || null;
+                                },
+                                async all(...params) {
+                                    const result = await client.query(sql, params);
+                                    return result.rows;
+                                },
                             };
                         },
                     };
@@ -56,12 +79,17 @@ if (DB_TYPE === 'postgres') {
                 }
             };
         },
-        pragma() {},
-        close() { return pool.end(); },
+
+        async pragma() {},
+
+        async close() {
+            await pool.end();
+        },
     };
 
-    logger.info('Database: PostgreSQL conectado');
+    logger.info('Database: PostgreSQL (Supabase) conectado');
 } else {
+    const Database = require('better-sqlite3');
     const rawPath = process.env.DB_PATH || './data/fut_invest.db';
     const dbPath = rawPath === ':memory:' ? ':memory:' : path.resolve(__dirname, '../../', rawPath);
 
@@ -72,14 +100,66 @@ if (DB_TYPE === 'postgres') {
         }
     }
 
-    db = new Database(dbPath);
+    const sqliteDb = new Database(dbPath);
     if (rawPath !== ':memory:') {
-        db.pragma('journal_mode = WAL');
-        db.pragma('synchronous = NORMAL');
-        db.pragma('cache_size = -64000'); // 64MB
-        db.pragma('busy_timeout = 5000');
+        sqliteDb.pragma('journal_mode = WAL');
+        sqliteDb.pragma('synchronous = NORMAL');
+        sqliteDb.pragma('cache_size = -64000');
+        sqliteDb.pragma('busy_timeout = 5000');
     }
-    db.pragma('foreign_keys = ON');
+    sqliteDb.pragma('foreign_keys = ON');
+
+    // Wrap SQLite to provide async-compatible API
+    db = {
+        _type: 'sqlite',
+
+        async exec(sql) {
+            let sqliteSql = sql;
+            if (db._type === 'sqlite') {
+                sqliteSql = sqliteSql.replace(/\bNOW\(\)/g, "(datetime('now'))");
+                sqliteSql = sqliteSql.replace(/\bCURRENT_DATE\b/g, "(date('now'))");
+            }
+            sqliteDb.exec(sqliteSql);
+        },
+
+        prepare(sql) {
+            // For SQLite, convert $N placeholders to ? and NOW() to datetime('now')
+            let sqliteSql = sql;
+            if (db._type === 'sqlite') {
+                sqliteSql = sqliteSql.replace(/\$\d+/g, '?');
+                sqliteSql = sqliteSql.replace(/\bNOW\(\)/g, "(datetime('now'))");
+                sqliteSql = sqliteSql.replace(/\bCURRENT_DATE\b/g, "(date('now'))");
+            }
+            const stmt = sqliteDb.prepare(sqliteSql);
+            return {
+                async run(...params) {
+                    const result = stmt.run(...params);
+                    return { lastInsertRowid: result.lastInsertRowid, changes: result.changes };
+                },
+                async get(...params) {
+                    return stmt.get(...params) || null;
+                },
+                async all(...params) {
+                    return stmt.all(...params);
+                },
+            };
+        },
+
+        transaction(fn) {
+            const sqliteTx = sqliteDb.transaction(fn);
+            return async (...args) => {
+                return sqliteTx(...args);
+            };
+        },
+
+        async pragma(value) {
+            return sqliteDb.pragma(value);
+        },
+
+        async close() {
+            sqliteDb.close();
+        },
+    };
 
     logger.info(`Database: SQLite (${rawPath === ':memory:' ? 'memoria' : dbPath})`);
 }

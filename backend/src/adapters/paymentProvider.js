@@ -22,6 +22,8 @@ class MockProvider {
     }
 
     verifyWebhook(_payload, _signature) {
+        // Mock provider: never verify in dev, but NEVER return true in production
+        if (process.env.NODE_ENV === 'production') return false;
         return true;
     }
 }
@@ -278,8 +280,11 @@ class StripeProvider {
 }
 
 function createProvider() {
-    const providerName = process.env.PAYMENT_PROVIDER || 'mock';
+    const providerName = process.env.PAYMENT_PROVIDER || 'payka';
     switch (providerName) {
+        case 'payka': {
+            return require('./paykaProvider');
+        }
         case 'coinbase_commerce': {
             const apiKey = process.env.COINBASE_API_KEY;
             const webhookSecret = process.env.COINBASE_WEBHOOK_SECRET;

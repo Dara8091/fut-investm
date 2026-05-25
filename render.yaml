@@ -1,0 +1,56 @@
+services:
+  # Frontend SPA
+  - type: web
+    name: futinvest-frontend
+    env: static
+    buildCommand: echo "No build required"
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # Backend API
+  - type: web
+    name: futinvest-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm ci --production
+    startCommand: cd backend && node src/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_TYPE
+        value: sqlite
+      - key: DB_PATH
+        value: ./data/futinvest.db
+      - key: LOG_LEVEL
+        value: info
+      - key: WAF_ENABLED
+        value: "true"
+      - key: METRICS_ENABLED
+        value: "true"
+      - key: FUTINVEST_ENABLED
+        value: "true"
+      - key: FUTINVEST_AUTO_EXECUTE
+        value: "false"
+      - key: FUTINVEST_MIN_PROFIT_USD
+        value: "1.0"
+      - key: FUTINVEST_MAX_TRADE_USD
+        value: "10000"
+      - key: FUTINVEST_PLATFORM_FEE_PERCENT
+        value: "10"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TOTP_SECRET
+        generateValue: true
+      - key: APP_SECRET
+        generateValue: true

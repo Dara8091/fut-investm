@@ -2,12 +2,14 @@ const { Router } = require('express');
 const crypto = require('crypto');
 const db = require('../config/database');
 const { authenticate } = require('../middleware/auth');
+const { rls } = require('../middleware/rls');
+const { referralLimiter, perRouteUserLimiter } = require('../middleware/rateLimit');
 
 const router = Router();
 
 const REFERRAL_BONUS_RATE = parseFloat(process.env.REFERRAL_BONUS_RATE || 0.05);
 
-router.get('/code', authenticate, (req, res) => {
+router.get('/code', authenticate, rls, perRouteUserLimiter, referralLimiter, (req, res) => {
     let user = db.prepare('SELECT id, referral_code FROM users WHERE id = ?').get(req.user.userId);
     if (!user.referral_code) {
         const code = `FUT${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
@@ -17,7 +19,7 @@ router.get('/code', authenticate, (req, res) => {
     res.json({ referralCode: user.referral_code, bonusRate: REFERRAL_BONUS_RATE });
 });
 
-router.get('/stats', authenticate, (req, res) => {
+router.get('/stats', authenticate, rls, perRouteUserLimiter, referralLimiter, (req, res) => {
     const referralCount = db.prepare(
         'SELECT COUNT(*) as c FROM users WHERE referred_by = ?'
     ).get(req.user.userId).c;
@@ -34,7 +36,7 @@ router.get('/stats', authenticate, (req, res) => {
 });
 
 // Called when a referred user makes their first deposit
-router.post('/track-deposit', authenticate, (req, res) => {
+router.post('/track-deposit', authenticate, rls, perRouteUserLimiter, referralLimiter, (req, res) => {
     const user = db.prepare('SELECT id, referred_by FROM users WHERE id = ?').get(req.user.userId);
     if (!user.referred_by) return res.json({ bonus: 0 });
 

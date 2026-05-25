@@ -1,0 +1,69 @@
+name: futinvest
+services:
+  # Backend API
+  - name: futinvest-backend
+    github:
+      repo: TU-USUARIO/fut-invest
+      branch: main
+      deploy_on_push: true
+    build_command: cd backend && npm ci --production
+    run_command: cd backend && node src/index.js
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 3001
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 30
+      period_seconds: 60
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: DB_TYPE
+        value: sqlite
+      - key: DB_PATH
+        value: ./data/futinvest.db
+      - key: LOG_LEVEL
+        value: info
+      - key: WAF_ENABLED
+        value: "true"
+      - key: CSRF_ENABLED
+        value: "true"
+      - key: METRICS_ENABLED
+        value: "true"
+      - key: FUTINVEST_ENABLED
+        value: "true"
+      - key: FUTINVEST_AUTO_EXECUTE
+        value: "false"
+      - key: FUTINVEST_MIN_PROFIT_USD
+        value: "1.0"
+      - key: FUTINVEST_MAX_TRADE_USD
+        value: "10000"
+      - key: FUTINVEST_PLATFORM_FEE_PERCENT
+        value: "10"
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: TOTP_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: APP_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: FRONTEND_URL
+        scope: RUN_TIME
+        type: SECRET
+
+  # Frontend SPA
+  - name: futinvest-frontend
+    github:
+      repo: TU-USUARIO/fut-invest
+      branch: main
+      deploy_on_push: true
+    build_command: echo "No build required"
+    environment_slug: html
+    routes:
+      - path: /
+    catchall_document: index.html

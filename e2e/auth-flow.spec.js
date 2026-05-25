@@ -61,11 +61,11 @@ test.describe('fut.invest — Flujo de Autenticación', () => {
 
     test('Navega entre tabs', async ({ page }) => {
         await page.click('#auth-skip-btn');
-        await page.click('#btn-tab-wallet');
+        await page.click('.nav-item[data-tab="wallet"]');
         await expect(page.locator('#tab-wallet')).toBeVisible();
         await expect(page.locator('#current-page-title')).toContainText('Billetera');
 
-        await page.click('#btn-tab-network');
+        await page.click('.nav-item[data-tab="network"]');
         await expect(page.locator('#tab-network')).toBeVisible();
         await expect(page.locator('#current-page-title')).toContainText('Red');
     });
@@ -74,10 +74,12 @@ test.describe('fut.invest — Flujo de Autenticación', () => {
         await page.click('#auth-skip-btn');
         const themeToggle = page.locator('.theme-toggle');
         await expect(themeToggle).toBeVisible();
-        await themeToggle.click();
+        // HTML starts with data-theme="dark", first click toggles to light
         await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
         await themeToggle.click();
         await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+        await themeToggle.click();
+        await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     });
 });
 
@@ -93,18 +95,13 @@ test.describe('fut.invest — Payment Flow', () => {
     });
 
     test('Muestra sección de billetera después de login', async ({ page }) => {
-        await page.click('#btn-tab-wallet');
+        await page.click('.nav-item[data-tab="wallet"]');
         await expect(page.locator('#tab-wallet')).toBeVisible();
-        // Default active sub-tab is "Retiro y Liquidación" (withdraw)
-        await expect(page.locator('.wallet-sub-tab.active')).toContainText('Retiro');
+        await expect(page.locator('#wallet-balance')).toBeVisible();
     });
 
     test('Genera dirección de depósito', async ({ page }) => {
-        await page.click('#btn-tab-wallet');
-        // Switch to deposit sub-tab first
-        await page.click('#sub-tab-deposit-btn');
-        await page.waitForTimeout(1000);
-        // Select deposit asset
+        await page.click('.nav-item[data-tab="wallet"]');
         await page.selectOption('#deposit-asset', 'USDT_TRC20');
         await page.fill('#deposit-amount', '100');
         await page.click('#btn-generate-deposit');
@@ -112,16 +109,8 @@ test.describe('fut.invest — Payment Flow', () => {
         await expect(page.locator('#deposit-address-display')).toBeVisible();
     });
 
-    test('Cambia a sub-tab de retiro', async ({ page }) => {
-        await page.click('#btn-tab-wallet');
-        await page.click('#sub-tab-withdraw-btn');
-        await expect(page.locator('#wallet-withdraw-content')).toBeVisible();
-    });
-
-    test('Solicitud de retiro con datos inválidos muestra error', async ({ page }) => {
-        await page.click('#btn-tab-wallet');
-        const withdrawTab = page.locator('#sub-tab-withdraw-btn');
-        await withdrawTab.click();
+    test('Validación de retiro con datos inválidos', async ({ page }) => {
+        await page.click('.nav-item[data-tab="wallet"]');
         // Invalid address (too short) with valid amount
         await page.fill('#wallet-address', 'T123');
         await page.fill('#wallet-amount', '100');
@@ -142,15 +131,16 @@ test.describe('fut.invest — Admin Panel', () => {
 
     test('Admin tab no visible para usuario normal', async ({ page }) => {
         // demo user is not admin, admin tab should be hidden
-        await expect(page.locator('#btn-tab-admin')).not.toBeVisible();
+        await expect(page.locator('.nav-item[data-tab="admin"]')).not.toBeVisible();
     });
 });
 
 test.describe('fut.invest — API Health', () => {
     test('Backend health endpoint responde', async ({ request }) => {
         const response = await request.get('http://localhost:3001/api/health');
-        expect(response.ok()).toBeTruthy();
         const body = await response.json();
+        console.log('Health response:', response.status(), body);
+        expect(response.ok()).toBeTruthy();
         expect(body.status).toBe('ok');
     });
 
@@ -158,8 +148,9 @@ test.describe('fut.invest — API Health', () => {
         const response = await request.post('http://localhost:3001/api/auth/login', {
             data: { email: 'demo@futinvest.io', password: 'Demo123!' }
         });
-        expect(response.ok()).toBeTruthy();
         const body = await response.json();
+        console.log('Login response:', response.status(), body);
+        expect(response.ok()).toBeTruthy();
         expect(body).toHaveProperty('accessToken');
         expect(body).toHaveProperty('user');
         expect(body.user.email).toBe('demo@futinvest.io');

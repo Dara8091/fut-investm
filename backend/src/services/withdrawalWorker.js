@@ -5,17 +5,16 @@ const { sendNotification } = require('./notificationService');
 
 const BATCH_SIZE = parseInt(process.env.WITHDRAWAL_BATCH_SIZE || 10);
 const POLL_INTERVAL = parseInt(process.env.WITHDRAWAL_POLL_INTERVAL_MS || 30000);
+const isPostgres = db._type === 'postgres';
 
 let intervalHandle = null;
 
-function processBatch() {
-    const pending = db.prepare(
-        `SELECT wq.*, u.email, u.full_name FROM withdrawal_queue wq
-         JOIN users u ON u.id = wq.user_id
-         WHERE wq.status = 'pending'
-         ORDER BY wq.created_at ASC
-         LIMIT ?`
-    ).all(BATCH_SIZE);
+async function processBatch() {
+    const sql = isPostgres
+        ? `SELECT wq.*, u.email, u.full_name FROM withdrawal_queue wq JOIN users u ON u.id = wq.user_id WHERE wq.status = 'pending' ORDER BY wq.created_at ASC LIMIT $1`
+        : `SELECT wq.*, u.email, u.full_name FROM withdrawal_queue wq JOIN users u ON u.id = wq.user_id WHERE wq.status = 'pending' ORDER BY wq.created_at ASC LIMIT ?`;
+
+    const pending = await db.prepare(sql).all(BATCH_SIZE);
 
     if (pending.length === 0) return;
 
@@ -23,56 +22,43 @@ function processBatch() {
 
     for (const item of pending) {
         try {
-            const result = provider.submitWithdrawal(item.asset, item.amount, item.address);
+            const result = await provider.submitWithdrawal(item.asset, item.amount, item.address);
 
             if (result && result.txHash) {
-                const updateTx = db.transaction(() => {
-                    db.prepare(
-                        `UPDATE withdrawal_queue SET status = 'processing', provider = ?, provider_tx_id = ?, processed_at = datetime('now') WHERE id = ?`
-                    ).run(result.provider || provider.name, result.providerTxId || result.txHash, item.id);
+                const updateTx = db.transaction(async () => {
+                    const updSql1 = isPostgres
+                        ? `UPDATE withdrawal_queue SET status = 'processing', provider = $1, provider_tx_id = $2, processed_at = NOW() WHERE id = $3`
+                        : `UPDATE withdrawal_queue SET status = 'processing', provider = ?, provider_tx_id = ?, processed_at = datetime('now') WHERE id = ?`;
+                    await db.prepare(updSql1).run(result.provider || provider.name, result.providerTxId || result.txHash, item.id);
 
-                    db.prepare(
-                        `UPDATE transactions SET status = 'processing', tx_hash = ?, provider = ?, provider_tx_id = ?, updated_at = datetime('now') WHERE id = ?`
-                    ).run(result.txHash, provider.name, result.providerTxId, item.transaction_id);
+                    const updSql2 = isPostgres
+                        ? `UPDATE transactions SET status = 'processing', tx_hash = $1, provider = $2, provider_tx_id = $3, updated_at = NOW() WHERE id = $4`
+                        : `UPDATE transactions SET status = 'processing', tx_hash = ?, provider = ?, provider_tx_id = ?, updated_at = datetime('now') WHERE id = ?`;
+                    await db.prepare(updSql2).run(result.txHash, provider.name, result.providerTxId, item.transaction_id);
                 });
 
-                updateTx();
+                await updateTx();
 
-                sendNotification(item.user_id, 'retiro_procesado', {
-                    email: item.email,
-                    amount: item.amount,
-                    asset: item.asset,
-                    txHash: result.txHash,
-                    status: 'processing',
-                });
-
-                logger.info(`Retiro #${item.id} procesado automáticamente, tx: ${result.txHash}`);
+                logger.info(`Retiro #${item.id} procesado: ${result.txHash}`);
+                sendNotification(item.user_id, 'withdrawal_processed', { txHash: result.txHash, amount: item.amount }).catch(() => {});
             }
         } catch (err) {
-            logger.error(`Error procesando retiro #${item.id}: ${err.message}`);
-
-            db.prepare(
-                `UPDATE withdrawal_queue SET status = 'failed', error_message = ?, processed_at = datetime('now') WHERE id = ?`
-            ).run(err.message, item.id);
-
-            db.prepare(
-                `UPDATE transactions SET status = 'failed', updated_at = datetime('now') WHERE id = ?`
-            ).run(item.transaction_id);
-
-            sendNotification(item.user_id, 'retiro_fallido', {
-                email: item.email,
-                amount: item.amount,
-                asset: item.asset,
-                error: err.message,
-                status: 'failed',
-            });
+            logger.error(`Error procesando retiro #${item.id}:`, err);
+            try {
+                const failSql = isPostgres
+                    ? `UPDATE withdrawal_queue SET status = 'failed', error_message = $1, processed_at = NOW() WHERE id = $2`
+                    : `UPDATE withdrawal_queue SET status = 'failed', error_message = ?, processed_at = datetime('now') WHERE id = ?`;
+                await db.prepare(failSql).run(err.message, item.id);
+            } catch (updateErr) {
+                logger.error('Error actualizando estado fallido:', updateErr);
+            }
         }
     }
 }
 
 function start() {
     if (intervalHandle) return;
-    logger.info(`Withdrawal worker iniciado (intervalo: ${POLL_INTERVAL}ms, batch: ${BATCH_SIZE})`);
+    logger.info(`Withdrawal worker iniciado (batch: ${BATCH_SIZE}, intervalo: ${POLL_INTERVAL}ms)`);
     processBatch();
     intervalHandle = setInterval(processBatch, POLL_INTERVAL);
 }
@@ -85,4 +71,4 @@ function stop() {
     }
 }
 
-module.exports = { start, stop, processBatch };
+module.exports = { start, stop };

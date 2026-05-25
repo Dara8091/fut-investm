@@ -1,704 +1,805 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fut.invest - Panel de Inversión Institucional</title>
-    <meta name="description" content="Plataforma de inversión con ROI dinámico, cifrado AES-256 GCM y red binaria multinivel. Diseñado bajo el estándar Institutional Trust.">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#002855">
-    <!-- OpenGraph -->
-    <meta property="og:title" content="fut.invest - Inversión Institucional">
-    <meta property="og:description" content="Plataforma de inversión con ROI dinámico, cifrado AES-256 GCM y red binaria multinivel.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://futinvest.io">
-    <meta property="og:image" content="https://futinvest.io/assets/og-image.png">
-    <meta property="og:locale" content="es_ES">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="fut.invest - Inversión Institucional">
-    <meta name="twitter:description" content="Plataforma de inversión con ROI dinámico y red binaria multinivel.">
-    <!-- Google Fonts: Inter -->
+    <title>fut.invest — Plataforma de Inversión Profesional</title>
+    <meta name="description" content="Plataforma institucional de inversión con ROI dinámico, arbitraje automatizado y gestión profesional de portafolio.">
+    <meta name="theme-color" content="#0A0E1A">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="assets/icon-192.svg" type="image/svg+xml">
     <link rel="stylesheet" href="style.css">
-    <!-- Sentry error tracking -->
-    <script>window.SENTRY_DSN = window.FUT_CONFIG?.SENTRY_DSN || '';</script>
-    <script src="https://browser.sentry-cdn.com/8.54.0/bundle.min.js" crossorigin="anonymous"
-        integrity="sha384-fjX9O7MfD6GRzQUdAV8SYhzQnsKpBFrrK0R+0KUHOxC4CWq+xjE1WcMjh7hQNjr"
-        onload="if(window.SENTRY_DSN){Sentry.init({dsn:window.SENTRY_DSN,tracesSampleRate:0.2});}"></script>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.socket.io https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:3001 ws: wss: https://*.sentry.io; img-src 'self' data: blob:; form-action 'self'; frame-ancestors 'none';"><｜end▁of▁thinking｜>
-
-<｜｜DSML｜｜tool_calls>
-<｜｜DSML｜｜invoke name="bash">
-<｜｜DSML｜｜parameter name="command" string="true">cmd /c "del /f /q C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\backend\data\e2e.db* 2>nul & cd /d C:\Users\rf883\.gemini\antigravity\scratch\fut_invest\e2e && npx playwright test --reporter=list --timeout=45000 2>&1"
-    <!-- robots -->
-    <meta name="robots" content="index, follow">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
     <div class="app-container">
-        <!-- Barra Lateral de Navegación -->
-        <button class="hamburger-btn" id="hamburger-btn" aria-label="Menú de navegación">
-            <span class="material-icons-round">menu</span>
-        </button>
-        <aside class="sidebar" role="navigation" aria-label="Navegación principal">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
             <div class="brand">
-                <span class="material-icons-round brand-icon" aria-hidden="true">shield</span>
+                <div class="brand-logo">
+                    <span class="material-icons-round">trending_up</span>
+                </div>
                 <div class="brand-text">
                     <h1>fut<span>.invest</span></h1>
-                    <span class="badge">Institutional Trust</span>
+                    <span class="brand-badge">Institutional</span>
                 </div>
             </div>
-            
-            <nav class="nav-menu" aria-label="Secciones del panel">
-                <button class="nav-item active" data-tab="dashboard" id="btn-tab-dashboard" aria-current="page">
-                    <span class="material-icons-round" aria-hidden="true">dashboard</span>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <span class="material-icons-round">dashboard</span>
                     <span>Dashboard</span>
                 </button>
-                <button class="nav-item" data-tab="wallet" id="btn-tab-wallet">
-                    <span class="material-icons-round" aria-hidden="true">account_balance_wallet</span>
+                <button class="nav-item" data-tab="wallet">
+                    <span class="material-icons-round">account_balance_wallet</span>
                     <span>Billetera</span>
                 </button>
-                <button class="nav-item" data-tab="security" id="btn-tab-security">
-                    <span class="material-icons-round" aria-hidden="true">security</span>
+                <button class="nav-item" data-tab="investments">
+                    <span class="material-icons-round">savings</span>
+                    <span>Inversiones</span>
+                </button>
+                <button class="nav-item" data-tab="futinves">
+                    <span class="material-icons-round">currency_exchange</span>
+                    <span>FutInvest</span>
+                </button>
+                <button class="nav-item" data-tab="network">
+                    <span class="material-icons-round">account_tree</span>
+                    <span>Red</span>
+                </button>
+                <button class="nav-item" data-tab="security">
+                    <span class="material-icons-round">shield</span>
                     <span>Seguridad</span>
                 </button>
-                <button class="nav-item" data-tab="network" id="btn-tab-network">
-                    <span class="material-icons-round" aria-hidden="true">account_tree</span>
-                    <span>Red Binaria</span>
+                <button class="nav-item" data-tab="profile">
+                    <span class="material-icons-round">person</span>
+                    <span>Mi Perfil</span>
                 </button>
-                <button class="nav-item code-hub-btn" data-tab="codehub" id="btn-tab-codehub">
-                    <span class="material-icons-round" aria-hidden="true">code</span>
-                    <span>Flutter Code Hub</span>
+                <button class="nav-item" data-tab="settings">
+                    <span class="material-icons-round">settings</span>
+                    <span>Ajustes</span>
                 </button>
-<button class="nav-item" data-tab="settings" id="btn-tab-settings" style="display: none;">
-    <span class="material-icons-round">settings</span>
-    <span class="nav-label" data-i18n="nav.settings">Ajustes</span>
-</button>
-<button class="nav-item" data-tab="profile" id="btn-tab-profile" style="display: none;">
-    <span class="material-icons-round">person</span>
-    <span class="nav-label">Mi Perfil</span>
-</button>
-                <button class="nav-item" data-tab="admin" id="btn-tab-admin" style="display: none;">
-                    <span class="material-icons-round" aria-hidden="true">admin_panel_settings</span>
+                <button class="nav-item" data-tab="admin" id="btn-tab-admin" style="display:none;">
+                    <span class="material-icons-round">admin_panel_settings</span>
                     <span>Administración</span>
                 </button>
             </nav>
 
             <div class="sidebar-footer">
-                <div class="status-indicator">
-                    <span class="dot pulse"></span>
-                    <span>Conexión Segura AES-256</span>
+                <div class="connection-status">
+                    <span class="status-dot pulse"></span>
+                    <span>AES-256 Conectado</span>
                 </div>
+                <div class="sidebar-version">v2.0.0</div>
             </div>
         </aside>
 
-        <!-- Contenedor Principal de Contenido -->
-        <main class="main-content" id="main-content" role="main">
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TOP BAR -->
             <header class="top-bar">
-                <div class="page-title-area">
-                    <h2 id="current-page-title">Dashboard General</h2>
-                    <p id="current-page-subtitle">Rendimiento de inversionista y balance del portafolio en tiempo real.</p>
-                </div>
-                <div class="user-profile">
-                    <div class="user-details">
-                        <div class="flex-align-center gap-6">
-                            <span class="user-name">Inversor VIP</span>
-                            <span class="badge badge-success kyc-badge" title="Identidad Verificada bajo normativas internacionales">
-                                <span class="material-icons-round font-10">verified</span> KYC Aprobado
-                            </span>
-                        </div>
-                        <span class="user-role">ID: #994827 • Perfil Conservador-Moderado</span>
+                <div class="top-bar-left">
+                    <button class="sidebar-toggle" id="sidebar-toggle">
+                        <span class="material-icons-round">menu</span>
+                    </button>
+                    <div class="page-info">
+                        <h2 id="current-page-title">Dashboard</h2>
+                        <p id="current-page-subtitle">Resumen de tu portafolio de inversión</p>
                     </div>
-                    <div class="avatar">IV</div>
+                </div>
+                <div class="top-bar-right">
+                    <button class="top-bar-btn" id="notif-btn" title="Notificaciones">
+                        <span class="material-icons-round">notifications</span>
+                        <span class="notif-badge" id="notif-count" style="display:none;">0</span>
+                    </button>
+                    <button class="top-bar-btn theme-toggle" id="theme-toggle" title="Cambiar tema">
+                        <span class="material-icons-round">dark_mode</span>
+                    </button>
+                    <div class="user-menu" id="user-menu">
+                        <div class="user-avatar" id="topbar-avatar">FU</div>
+                        <div class="user-info">
+                            <span class="user-name" id="topbar-user-name">—</span>
+                            <span class="user-role" id="topbar-user-role">—</span>
+                        </div>
+                        <span class="material-icons-round">expand_more</span>
+                    </div>
                 </div>
             </header>
 
             <div class="content-scroll">
-                <!-- ================= TAB: DASHBOARD ================= -->
+                <!-- ==================== DASHBOARD ==================== -->
                 <section class="tab-content active" id="tab-dashboard">
-                    <!-- Market Ticker -->
-                    <div class="market-ticker-bar" id="market-ticker">
-                        <div class="ticker-item"><span class="ticker-sym">BTC/USD</span><span class="ticker-price" id="ticker-btc">—</span><span class="ticker-change" id="ticker-btc-chg"></span></div>
-                        <div class="ticker-item"><span class="ticker-sym">ETH/USD</span><span class="ticker-price" id="ticker-eth">—</span><span class="ticker-change" id="ticker-eth-chg"></span></div>
-                        <div class="ticker-item"><span class="ticker-sym">FUT Index</span><span class="ticker-price" id="ticker-fut">—</span><span class="ticker-change" id="ticker-fut-chg"></span></div>
-                        <div class="ticker-item"><span class="ticker-sym">24h Vol</span><span class="ticker-price" id="ticker-vol">—</span></div>
+                    <!-- Market Ticker Bar -->
+                    <div class="market-ticker-bar">
+                        <div class="ticker-track">
+                            <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$67,234</span><span class="ticker-change up">+2.4%</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$3,456</span><span class="ticker-change up">+1.8%</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">SOL</span><span class="ticker-price">$178</span><span class="ticker-change down">-0.5%</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">BNB</span><span class="ticker-price">$612</span><span class="ticker-change up">+0.9%</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">XRP</span><span class="ticker-price">$0.62</span><span class="ticker-change up">+3.1%</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">ADA</span><span class="ticker-price">$0.48</span><span class="ticker-change down">-1.2%</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">DOGE</span><span class="ticker-price">$0.16</span><span class="ticker-change up">+5.4%</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">DOT</span><span class="ticker-price">$7.82</span><span class="ticker-change up">+1.1%</span></div>
+                        </div>
                     </div>
+
+                    <!-- Hero Balance Card -->
                     <div class="dashboard-hero">
-                        <div class="hero-main-card">
-                            <span class="hero-card-tag">BALANCE TOTAL DISPONIBLE</span>
-                            <div class="balance-row">
-                                <span class="balance-value" id="live-balance">$12,450.75</span>
-                                <span class="balance-currency">USD</span>
+                        <div class="hero-card">
+                            <div class="hero-glow"></div>
+                            <div class="hero-card-header">
+                                <div class="hero-header-left">
+                                    <span class="hero-label">Balance Total del Portafolio</span>
+                                    <span class="hero-live-dot"></span>
+                                </div>
+                                <span class="hero-badge" id="hero-tier-badge">Silver</span>
                             </div>
-                            
-                            <div class="hero-badges-container">
-                                <div class="live-roi-badge">
-                                    <span class="material-icons-round">trending_up</span>
-                                    <span>ROI Diario: </span>
-                                    <strong id="live-roi-percentage">+1.85%</strong>
-                                </div>
-                                <div class="membership-badge">
-                                    <span class="material-icons-round">workspace_premium</span>
-                                    <span>Institutional Black</span>
-                                </div>
+                            <div class="hero-balance">
+                                <span class="hero-currency">$</span>
+                                <span class="hero-amount" id="live-balance">12,450.75</span>
+                                <span class="hero-usd">USD</span>
                             </div>
-                            
-                            <div class="hero-card-footer">
-                                <div class="footer-stat">
-                                    <span class="stat-label">Ganancia Acumulada (Contratos Activos)</span>
-                                    <span class="stat-value" id="live-earnings">+$342.10 USD</span>
+                            <div class="hero-change">
+                                <span class="material-icons-round">trending_up</span>
+                                <span id="hero-change-value">+$342.10 hoy</span>
+                                <span class="hero-change-percent" id="hero-change-percent">(+2.83%)</span>
+                            </div>
+                            <div class="hero-stats">
+                                <div class="hero-stat">
+                                    <div class="hero-stat-icon-wrap">
+                                        <span class="hero-stat-icon material-icons-round">trending_up</span>
+                                    </div>
+                                    <div class="hero-stat-info">
+                                        <span class="hero-stat-label">ROI Diario</span>
+                                        <span class="hero-stat-value green" id="live-roi-percentage">+1.85%</span>
+                                    </div>
                                 </div>
-                                <div class="footer-stat">
-                                    <span class="stat-label">Capital Total en Contratos</span>
-                                    <span class="stat-value">$10,000.00 USD</span>
+                                <div class="hero-stat">
+                                    <div class="hero-stat-icon-wrap">
+                                        <span class="hero-stat-icon material-icons-round">savings</span>
+                                    </div>
+                                    <div class="hero-stat-info">
+                                        <span class="hero-stat-label">Ganancia Acumulada</span>
+                                        <span class="hero-stat-value" id="live-earnings">+$342.10</span>
+                                    </div>
+                                </div>
+                                <div class="hero-stat">
+                                    <div class="hero-stat-icon-wrap">
+                                        <span class="hero-stat-icon material-icons-round">description</span>
+                                    </div>
+                                    <div class="hero-stat-info">
+                                        <span class="hero-stat-label">Contratos Activos</span>
+                                        <span class="hero-stat-value" id="live-contracts">2</span>
+                                    </div>
+                                </div>
+                                <div class="hero-stat">
+                                    <div class="hero-stat-icon-wrap">
+                                        <span class="hero-stat-icon material-icons-round">currency_exchange</span>
+                                    </div>
+                                    <div class="hero-stat-info">
+                                        <span class="hero-stat-label">Arbitrajes Hoy</span>
+                                        <span class="hero-stat-value" id="hero-arb-count">0</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- SECCIÓN DE INVERSIONISTAS: Planes de Inversión y Contratos Activos -->
-                    <div class="investor-section-header">
-                        <span class="material-icons-round">assignment_turned_in</span>
-                        <h3>Mis Contratos de Inversión Activos</h3>
-                    </div>
-                    
-                    <div class="grid-three-cols" id="active-contracts-grid">
-                        <!-- Contrato 1 -->
-                        <div class="glass-card investor-contract-card">
-                            <div class="contract-header">
-                                <span class="contract-id">CONTRATO #F-9982</span>
-                                <span class="badge badge-success">Activo</span>
-                            </div>
-                            <div class="contract-capital">
-                                <span class="cap-lbl">Monto Invertido</span>
-                                <strong class="cap-val">$6,000.00 USD</strong>
-                            </div>
-                            <div class="contract-progress-area">
-                                <div class="progress-labels">
-                                    <span>Rendimiento Cosechado (200% Límite)</span>
-                                    <strong>64.5%</strong>
-                                </div>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-fill" style="width: 64.5%;"></div>
-                                </div>
-                                <div class="progress-limits">
-                                    <span>$3,870.00 Retornado</span>
-                                    <span>Meta: $12,000.00</span>
-                                </div>
-                            </div>
-                            <div class="contract-footer">
-                                <span>Rango ROI: <strong>1.8% - 2.5%</strong></span>
-                                <span class="text-primary font-11">Plan Black</span>
-                            </div>
-                        </div>
-
-                        <!-- Contrato 2 -->
-                        <div class="glass-card investor-contract-card">
-                            <div class="contract-header">
-                                <span class="contract-id">CONTRATO #F-8742</span>
-                                <span class="badge badge-success">Activo</span>
-                            </div>
-                            <div class="contract-capital">
-                                <span class="cap-lbl">Monto Invertido</span>
-                                <strong class="cap-val">$4,000.00 USD</strong>
-                            </div>
-                            <div class="contract-progress-area">
-                                <div class="progress-labels">
-                                    <span>Rendimiento Cosechado (200% Límite)</span>
-                                    <strong>32.8%</strong>
-                                </div>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-fill" style="width: 32.8%;"></div>
-                                </div>
-                                <div class="progress-limits">
-                                    <span>$1,312.00 Retornado</span>
-                                    <span>Meta: $8,000.00</span>
-                                </div>
-                            </div>
-                            <div class="contract-footer">
-                                <span>Rango ROI: <strong>1.5% - 2.0%</strong></span>
-                                <span class="text-primary font-11">Plan Gold</span>
-                            </div>
-                        </div>
-
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="switchTab('wallet')">
+                            <span class="quick-action-icon material-icons-round">add_circle</span>
+                            <span class="quick-action-text">Depositar</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="switchTab('wallet')">
+                            <span class="quick-action-icon material-icons-round">remove_circle</span>
+                            <span class="quick-action-text">Retirar</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="switchTab('investments')">
+                            <span class="quick-action-icon material-icons-round">savings</span>
+                            <span class="quick-action-text">Invertir</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="switchTab('futinves')">
+                            <span class="quick-action-icon material-icons-round">currency_exchange</span>
+                            <span class="quick-action-text">Arbitraje</span>
+                        </button>
                     </div>
 
-                    <!-- Investment Plans -->
-                    <div class="plans-section">
-                        <div class="plans-header">
-                            <span class="material-icons-round">account_balance</span>
-                            <h3>Planes de Inversión</h3>
-                            <button class="btn btn-outline btn-compact" onclick="showAllPlans()">Ver todos</button>
+                    <!-- Stats Grid -->
+                    <div class="dashboard-stats-grid">
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-header">
+                                <span class="dash-stat-icon material-icons-round" style="color:#00D4FF">account_balance_wallet</span>
+                                <span class="dash-stat-trend up">+12.5%</span>
+                            </div>
+                            <div class="dash-stat-value">$12,450</div>
+                            <div class="dash-stat-label">Balance Total</div>
+                            <canvas class="dash-stat-sparkline" id="spark-balance" width="120" height="40"></canvas>
                         </div>
-                        <div class="plans-grid" id="plans-grid">
-                            <div class="plan-card" data-plan="interbank">
-                                <div class="plan-badge interbank">Interbank</div>
-                                <div class="plan-name">Plazo Fijo Interbancario</div>
-                                <div class="plan-rate">4.2% <span>mensual</span></div>
-                                <div class="plan-details">
-                                    <span>$5,000 - $50,000</span>
-                                    <span>30 días</span>
-                                </div>
-                                <button class="btn btn-primary btn-full plan-invest-btn" onclick="openInvestModal('Interbank')">Invertir</button>
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-header">
+                                <span class="dash-stat-icon material-icons-round" style="color:#00FF88">trending_up</span>
+                                <span class="dash-stat-trend up">+2.8%</span>
                             </div>
-                            <div class="plan-card" data-plan="institutional">
-                                <div class="plan-badge institutional">Institutional</div>
-                                <div class="plan-name">Fondo Institucional</div>
-                                <div class="plan-rate">6.8% <span>mensual</span></div>
-                                <div class="plan-details">
-                                    <span>$10,000 - $250,000</span>
-                                    <span>60 días</span>
-                                </div>
-                                <button class="btn btn-primary btn-full plan-invest-btn" onclick="openInvestModal('Institutional')">Invertir</button>
+                            <div class="dash-stat-value green">$342</div>
+                            <div class="dash-stat-label">Ganancia Hoy</div>
+                            <canvas class="dash-stat-sparkline" id="spark-profit" width="120" height="40"></canvas>
+                        </div>
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-header">
+                                <span class="dash-stat-icon material-icons-round" style="color:#FFD700">workspace_premium</span>
+                                <span class="dash-stat-trend">30d</span>
                             </div>
-                            <div class="plan-card" data-plan="crypto">
-                                <div class="plan-badge crypto">Crypto Yield</div>
-                                <div class="plan-name">Rendimiento en Cripto</div>
-                                <div class="plan-rate">9.5% <span>mensual</span></div>
-                                <div class="plan-details">
-                                    <span>$500 - $25,000</span>
-                                    <span>Flexible</span>
-                                </div>
-                                <button class="btn btn-primary btn-full plan-invest-btn" onclick="openInvestModal('Crypto')">Invertir</button>
+                            <div class="dash-stat-value">1.85%</div>
+                            <div class="dash-stat-label">ROI Promedio</div>
+                            <canvas class="dash-stat-sparkline" id="spark-roi" width="120" height="40"></canvas>
+                        </div>
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-header">
+                                <span class="dash-stat-icon material-icons-round" style="color:#9945FF">auto_awesome</span>
+                                <span class="dash-stat-trend up">+5</span>
                             </div>
-                            <div class="plan-card" data-plan="premium">
-                                <div class="plan-badge premium">Premium</div>
-                                <div class="plan-name">Cuenta Premium</div>
-                                <div class="plan-rate">12.0% <span>mensual</span></div>
-                                <div class="plan-details">
-                                    <span>$25,000 - $500,000</span>
-                                    <span>90 días</span>
-                                </div>
-                                <button class="btn btn-primary btn-full plan-invest-btn" onclick="openInvestModal('Premium')">Invertir</button>
-                            </div>
+                            <div class="dash-stat-value">23</div>
+                            <div class="dash-stat-label">Arbitrajes Ejecutados</div>
+                            <canvas class="dash-stat-sparkline" id="spark-arb" width="120" height="40"></canvas>
                         </div>
                     </div>
 
-                    <!-- Trading Widget -->
-                    <div class="trading-widget">
-                        <div class="trading-widget-header">
-                            <span class="material-icons-round">show_chart</span>
-                            <h3>Trading Rápido</h3>
-                            <span class="trading-badge">Solo mayores de edad</span>
+                    <!-- Main Content Grid -->
+                    <div class="dashboard-main-grid">
+                        <!-- Left: Chart + Contracts -->
+                        <div class="dashboard-left-col">
+                            <!-- ROI Chart -->
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">show_chart</span> Rendimiento 30 Días</h3>
+                                <div class="chart-time-filters">
+                                    <button class="chart-filter-btn" data-range="7">7D</button>
+                                    <button class="chart-filter-btn active" data-range="30">30D</button>
+                                    <button class="chart-filter-btn" data-range="90">90D</button>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <canvas id="roi-chart" width="800" height="300"></canvas>
+                            </div>
+
+                            <!-- Active Contracts -->
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">description</span> Contratos Activos</h3>
+                                <span class="section-badge">2 activos</span>
+                            </div>
+                            <div class="contracts-grid" id="contracts-grid">
+                                <div class="contract-card gold">
+                                    <div class="contract-header">
+                                        <div class="contract-ref">
+                                            <span class="material-icons-round">description</span>
+                                            <span>F-9982</span>
+                                        </div>
+                                        <span class="contract-tier-badge gold">GOLD</span>
+                                    </div>
+                                    <div class="contract-body">
+                                        <div class="contract-amount">$6,000.00</div>
+                                        <div class="contract-roi">ROI: 1.5% - 2.0% diario</div>
+                                        <div class="contract-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width:32%"></div>
+                                            </div>
+                                            <span class="progress-text">$3,870 / $12,000</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="contract-card silver">
+                                    <div class="contract-header">
+                                        <div class="contract-ref">
+                                            <span class="material-icons-round">description</span>
+                                            <span>F-8742</span>
+                                        </div>
+                                        <span class="contract-tier-badge silver">SILVER</span>
+                                    </div>
+                                    <div class="contract-body">
+                                        <div class="contract-amount">$4,000.00</div>
+                                        <div class="contract-roi">ROI: 1.0% - 1.5% diario</div>
+                                        <div class="contract-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width:16%"></div>
+                                            </div>
+                                            <span class="progress-text">$1,312 / $8,000</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="trading-widget-body">
-                            <div class="trading-form-row">
-                                <div class="trading-asset-select">
-                                    <select id="trade-asset" class="custom-select">
-                                        <option value="BTCUSD">BTC/USD</option>
-                                        <option value="ETHUSD">ETH/USD</option>
-                                        <option value="FUT">FUT Index</option>
+
+                        <!-- Right: Activity + Allocation + FutInvest Preview -->
+                        <div class="dashboard-right-col">
+                            <!-- Portfolio Allocation -->
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">pie_chart</span> Distribución</h3>
+                            </div>
+                            <div class="allocation-card">
+                                <canvas id="allocation-chart" width="200" height="200"></canvas>
+                                <div class="allocation-legend">
+                                    <div class="legend-item"><span class="legend-dot" style="background:#00D4FF"></span><span>USDT TRC20</span><strong>35%</strong></div>
+                                    <div class="legend-item"><span class="legend-dot" style="background:#00FF88"></span><span>USDT ERC20</span><strong>25%</strong></div>
+                                    <div class="legend-item"><span class="legend-dot" style="background:#F7931A"></span><span>BTC</span><strong>20%</strong></div>
+                                    <div class="legend-item"><span class="legend-dot" style="background:#627EEA"></span><span>ETH</span><strong>15%</strong></div>
+                                    <div class="legend-item"><span class="legend-dot" style="background:#9945FF"></span><span>SOL</span><strong>5%</strong></div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Activity -->
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">history</span> Actividad Reciente</h3>
+                                <a href="#" class="section-link" onclick="switchTab('profile'); return false;">Ver todo</a>
+                            </div>
+                            <div class="activity-list" id="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon deposit"><span class="material-icons-round">arrow_downward</span></div>
+                                    <div class="activity-info">
+                                        <span class="activity-title">Depósito USDT</span>
+                                        <span class="activity-date">Hace 2 horas</span>
+                                    </div>
+                                    <span class="activity-amount green">+$2,500</span>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon roi"><span class="material-icons-round">trending_up</span></div>
+                                    <div class="activity-info">
+                                        <span class="activity-title">ROI Diario</span>
+                                        <span class="activity-date">Hace 5 horas</span>
+                                    </div>
+                                    <span class="activity-amount green">+$185</span>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon arbitrage"><span class="material-icons-round">currency_exchange</span></div>
+                                    <div class="activity-info">
+                                        <span class="activity-title">Arbitraje BTC/USDT</span>
+                                        <span class="activity-date">Hace 8 horas</span>
+                                    </div>
+                                    <span class="activity-amount green">+$42</span>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon withdraw"><span class="material-icons-round">arrow_upward</span></div>
+                                    <div class="activity-info">
+                                        <span class="activity-title">Retiro USDT</span>
+                                        <span class="activity-date">Ayer</span>
+                                    </div>
+                                    <span class="activity-amount red">-$500</span>
+                                </div>
+                            </div>
+
+                            <!-- FutInvest Preview -->
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">auto_awesome</span> FutInvest — Oportunidades</h3>
+                                <a href="#" class="section-link" onclick="switchTab('futinves'); return false;">Ver motor</a>
+                            </div>
+                            <div class="futinvest-preview" id="futinvest-preview">
+                                <div class="futinvest-preview-item">
+                                    <div class="futinvest-pair">
+                                        <span class="futinvest-symbol">BTC/USDT</span>
+                                        <span class="futinvest-exchanges">Binance → OKX</span>
+                                    </div>
+                                    <div class="futinvest-profit">
+                                        <span class="futinvest-spread">0.85%</span>
+                                        <span class="futinvest-profit-value green">+$85</span>
+                                    </div>
+                                </div>
+                                <div class="futinvest-preview-item">
+                                    <div class="futinvest-pair">
+                                        <span class="futinvest-symbol">ETH/USDT</span>
+                                        <span class="futinvest-exchanges">Bybit → KuCoin</span>
+                                    </div>
+                                    <div class="futinvest-profit">
+                                        <span class="futinvest-spread">0.62%</span>
+                                        <span class="futinvest-profit-value green">+$62</span>
+                                    </div>
+                                </div>
+                                <div class="futinvest-preview-item">
+                                    <div class="futinvest-pair">
+                                        <span class="futinvest-symbol">SOL/USDT</span>
+                                        <span class="futinvest-exchanges">Gate → Binance</span>
+                                    </div>
+                                    <div class="futinvest-profit">
+                                        <span class="futinvest-spread">0.43%</span>
+                                        <span class="futinvest-profit-value green">+$43</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== WALLET ==================== -->
+                <section class="tab-content" id="tab-wallet">
+                    <div class="wallet-container">
+                        <div class="wallet-balance-card">
+                            <span class="wallet-label">Balance Disponible</span>
+                            <div class="wallet-amount">
+                                <span class="wallet-currency">$</span>
+                                <span class="wallet-value" id="wallet-balance">12,450.75</span>
+                                <span class="wallet-usd">USD</span>
+                            </div>
+                            <div class="wallet-actions">
+                                <button class="wallet-action-btn deposit" id="btn-show-deposit">
+                                    <span class="material-icons-round">add_circle</span>
+                                    <span>Depositar</span>
+                                </button>
+                                <button class="wallet-action-btn withdraw" id="btn-show-withdraw">
+                                    <span class="material-icons-round">remove_circle</span>
+                                    <span>Retirar</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Deposit Section -->
+                        <div class="wallet-section" id="wallet-deposit-section">
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">add_circle</span> Depositar Fondos</h3>
+                            </div>
+                            <div class="glass-card">
+                                <div class="form-group">
+                                    <label>Activo</label>
+                                    <select id="deposit-asset" class="custom-select">
+                                        <option value="USDT_TRC20">USDT (TRC20) — Comisión baja</option>
+                                        <option value="USDT_ERC20">USDT (ERC20) — Red Ethereum</option>
+                                        <option value="BTC">Bitcoin (BTC)</option>
+                                        <option value="ETH">Ethereum (ETH)</option>
+                                        <option value="SOL">Solana (SOL)</option>
+                                        <option value="BNB">BNB (BSC)</option>
                                     </select>
                                 </div>
-                                <div class="trading-type-select">
-                                    <button class="trade-type-btn active" data-side="buy" id="trade-buy-btn"><span class="material-icons-round">trending_up</span> Comprar</button>
-                                    <button class="trade-type-btn" data-side="sell" id="trade-sell-btn"><span class="material-icons-round">trending_down</span> Vender</button>
-                                </div>
-                            </div>
-                            <div class="trading-form-row">
                                 <div class="form-group">
                                     <label>Monto (USD)</label>
-                                    <input type="number" id="trade-amount" class="custom-input" placeholder="100" min="10" value="100">
+                                    <input type="number" id="deposit-amount" class="custom-input" placeholder="100" min="10">
                                 </div>
-                                <div class="trading-price-display">
-                                    <span class="trade-price-label">Precio estimado</span>
-                                    <span class="trade-price-value" id="trade-price">$0.00</span>
+                                <button class="btn btn-primary btn-lg" id="btn-generate-deposit">
+                                    <span class="material-icons-round">qr_code</span>
+                                    Generar Dirección de Depósito
+                                </button>
+                            </div>
+                            <div class="glass-card deposit-result" id="deposit-result-card" style="display:none;">
+                                <h4 id="deposit-qr-label">USDT (TRC20)</h4>
+                                <div class="qr-container" id="qrcode-deposit-container"></div>
+                                <code id="deposit-address-display" class="deposit-address">—</code>
+                                <button class="btn btn-outline" id="btn-copy-deposit">
+                                    <span class="material-icons-round">content_copy</span> Copiar Dirección
+                                </button>
+                                <div class="deposit-warning">
+                                    <span class="material-icons-round">warning</span>
+                                    <span>Envía solo <strong>USDT TRC20</strong> a esta dirección. Enviar otros activos puede resultar en pérdida permanente.</span>
                                 </div>
                             </div>
-                            <button class="btn btn-primary btn-full" id="btn-execute-trade">
-                                <span class="material-icons-round">bolt</span> Ejecutar Operación
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Performance Chart -->
-                    <div class="glass-card chart-card">
-                        <div class="card-header">
-                            <span class="material-icons-round text-primary">monitoring</span>
-                            <h3>Rendimiento (7 días)</h3>
-                            <div class="chart-legend">
-                                <span class="legend-item"><span class="legend-dot" style="background:var(--neon-cyan)"></span> ROI Diario</span>
-                                <span class="legend-item"><span class="legend-dot" style="background:var(--neon-green)"></span> Balance</span>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="perf-chart" width="600" height="200"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="grid-two-cols">
-                        <!-- Calculadora Interactiva de ROI -->
-                        <div class="glass-card">
-                            <div class="card-header">
-                                <span class="material-icons-round text-primary">calculate</span>
-                                <h3>Calculadora de Inversionista</h3>
-                            </div>
-                            <p class="card-desc">Simula tus retornos institucionales basados en los diferentes niveles de membresía.</p>
-                            
-                            <div class="calculator-body">
-                                <div class="input-group-range">
-                                    <div class="range-labels">
-                                        <span>Capital de Inversión</span>
-                                        <span class="range-val" id="calc-amount-label">$5,000 USD</span>
-                                    </div>
-                                    <input type="range" id="calc-investment" min="500" max="100000" step="500" value="5000" class="custom-slider">
-                                </div>
-
-                                <div class="tier-select-grid">
-                                    <div class="tier-option" data-tier="silver">
-                                        <strong>Silver</strong>
-                                        <span>$100 - $999</span>
-                                        <small>ROI: 1.2% - 1.5%</small>
-                                    </div>
-                                    <div class="tier-option" data-tier="gold">
-                                        <strong>Gold</strong>
-                                        <span>$1,000 - $4,999</span>
-                                        <small>ROI: 1.5% - 2.0%</small>
-                                    </div>
-                                    <div class="tier-option active" data-tier="black">
-                                        <strong>Black VIP</strong>
-                                        <span>$5,000 - $9,999</span>
-                                        <small>ROI: 1.8% - 2.5%</small>
-                                    </div>
-                                    <div class="tier-option" data-tier="interbank">
-                                        <strong>Interbank</strong>
-                                        <span>$10K - $24,999</span>
-                                        <small>4.2% mensual fijo</small>
-                                    </div>
-                                    <div class="tier-option" data-tier="institutional">
-                                        <strong>Institutional</strong>
-                                        <span>$25K - $49,999</span>
-                                        <small>6.8% mensual fijo</small>
-                                    </div>
-                                    <div class="tier-option" data-tier="premium">
-                                        <strong>Premium</strong>
-                                        <span>$50K - $500K</span>
-                                        <small>12.0% mensual fijo</small>
-                                    </div>
-                                </div>
-
-                                <div class="calc-results">
-                                    <div class="calc-result-box">
-                                        <span class="result-lbl">Retorno Diario Estimado</span>
-                                        <span class="result-val text-success" id="calc-daily">+$112.50 USD</span>
-                                    </div>
-                                    <div class="calc-result-box">
-                                        <span class="result-lbl">Retorno Mensual Promedio</span>
-                                        <span class="result-val" id="calc-monthly">+$3,375.00 USD</span>
-                                    </div>
-                                    <div class="calc-result-box">
-                                        <span class="result-lbl">Retorno Anual Estimado</span>
-                                        <span class="result-val text-primary" id="calc-yearly">+$40,500.00 USD</span>
-                                    </div>
-                                </div>
+                            <div class="glass-card deposit-instructions" id="deposit-instructions-card" style="display:none; opacity: 0; pointer-events: none;">
+                                <h4 id="deposit-asset-label">Instrucciones de Depósito</h4>
+                                <p>Envía tu depósito a la dirección generada arriba.</p>
                             </div>
                         </div>
 
-                        <!-- HISTORIAL DE RENDIMIENTOS DIARIOS (LEDGER) -->
-                        <div class="glass-card">
-                            <div class="card-header">
-                                <span class="material-icons-round text-secondary">history_edu</span>
-                                <h3>Historial de Pagos de ROI (Últimos 5 días)</h3>
+                        <!-- Withdraw Section -->
+                        <div class="wallet-section" id="wallet-withdraw-section">
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">remove_circle</span> Solicitar Retiro</h3>
                             </div>
-                            <p class="card-desc">Historial transparente de la tasa de retorno pagada a tus contratos activos.</p>
-                            
-                            <div class="ledger-table-container">
-                                <table class="ledger-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Tasa ROI</th>
-                                            <th>Ganancia Obtenida</th>
-                                            <th>Estado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="roi-ledger-tbody">
-                                        <tr>
-                                            <td>22/05/2026</td>
-                                            <td class="text-success font-bold">+2.14%</td>
-                                            <td>$214.00 USD</td>
-                                            <td><span class="badge badge-success">Pagado</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>21/05/2026</td>
-                                            <td class="text-success font-bold">+1.98%</td>
-                                            <td>$198.00 USD</td>
-                                            <td><span class="badge badge-success">Pagado</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>20/05/2026</td>
-                                            <td class="text-success font-bold">+1.87%</td>
-                                            <td>$187.00 USD</td>
-                                            <td><span class="badge badge-success">Pagado</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>19/05/2026</td>
-                                            <td class="text-success font-bold">+2.32%</td>
-                                            <td>$232.00 USD</td>
-                                            <td><span class="badge badge-success">Pagado</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>18/05/2026</td>
-                                            <td class="text-success font-bold">+1.65%</td>
-                                            <td>$165.00 USD</td>
-                                            <td><span class="badge badge-success">Pagado</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ================= TAB: WALLET ================= -->
-                <section class="tab-content" id="tab-wallet">
-                    <!-- Tabs Internos de Billetera: Fondeo vs Retiro -->
-                    <div class="wallet-sub-tabs">
-                        <button class="wallet-sub-tab active" id="sub-tab-withdraw-btn">
-                            <span class="material-icons-round">call_made</span> Retiro y Liquidación
-                        </button>
-                        <button class="wallet-sub-tab" id="sub-tab-deposit-btn">
-                            <span class="material-icons-round">call_received</span> Inyectar Capital (Depósito)
-                        </button>
-                    </div>
-
-                    <!-- SUB-TAB 1: RETIRO Y LIQUIDACIÓN -->
-                    <div class="wallet-sub-content active" id="wallet-withdraw-content">
-                        <div class="grid-two-cols">
-                            <!-- Formulario de Retiro -->
                             <div class="glass-card">
-                                <div class="card-header">
-                                    <span class="material-icons-round text-primary">send</span>
-                                    <h3>Solicitar Liquidación</h3>
-                                </div>
-                                <p class="card-desc">Valida tu billetera de destino. Nuestro sistema automatizado procesará la pasarela de retiro.</p>
-
-                                <div class="wallet-form">
-                                    <div class="form-group">
-                                        <label for="wallet-asset">Activo Blockchain</label>
-                                        <select id="wallet-asset" class="custom-select">
-                                            <option value="USDT_TRC20">USDT (TRC20) - Recomendado</option>
-                                            <option value="USDT_ERC20">USDT (ERC20)</option>
-                                            <option value="BTC">Bitcoin (BTC)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="wallet-address">Dirección de Destino</label>
-                                        <div class="input-with-validation">
-                                            <input type="text" id="wallet-address" placeholder="Ingresa la dirección de tu billetera" class="custom-input">
-                                            <span class="material-icons-round validation-icon" id="wallet-validation-icon">pending</span>
-                                        </div>
-                                        <small class="helper-text" id="wallet-helper-text">
-                                            USDT TRC20 debe empezar con 'T' y tener 34 caracteres.
-                                        </small>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="wallet-amount">Monto a Liquidar (USD)</label>
-                                        <input type="number" id="wallet-amount" placeholder="0.00" class="custom-input" min="10">
-                                    </div>
-
-                                    <div class="form-actions">
-                                        <button class="btn btn-primary" id="btn-show-qr" disabled>
-                                            <span class="material-icons-round">qr_code_2</span>
-                                            <span>Mostrar QR de Pago</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Sección Dinámica: QR o Liquidación Total -->
-                            <div class="flex-column-gap">
-                                <!-- Contenedor de Código QR -->
-                                <div class="glass-card qr-card" id="qr-container-box" style="display: none;">
-                                    <div class="qr-wrapper">
-                                        <span class="qr-title">PASARELA DE RETIRO SEGURO</span>
-                                        
-                                        <div class="qr-code-mock">
-                                            <div id="qrcode-withdraw-container" style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;color:#999;font-size:12px;">Escanea para pagar</div>
-                                            <div class="qr-asset-badge" id="qr-asset-label">USDT (TRC20)</div>
-                                        </div>
-                                        <span class="qr-address-text" id="qr-wallet-address-display">T...</span>
-                                    </div>
-                                </div>
-
-                                <!-- Liquidación Total -->
-                                <div class="glass-card critical-card">
-                                    <div class="card-header">
-                                        <span class="material-icons-round text-secondary">flash_on</span>
-                                        <h3 class="text-secondary">Liquidación Institucional Directa</h3>
-                                    </div>
-                                    <p class="card-desc text-dark">Al presionar este botón, se retirarán <strong>todos los fondos</strong> disponibles ($12,450.75 USD) hacia la billetera configurada. Esta acción detendrá el ROI diario de forma inmediata.</p>
-                                    
-                                    <div class="critical-actions">
-                                        <button class="btn btn-secondary btn-full" id="btn-total-liquidation" disabled>
-                                            <span class="material-icons-round">warning_amber</span>
-                                            <span>EJECUTAR LIQUIDACIÓN TOTAL</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SUB-TAB 2: FONDEO E INYECCIÓN DE CAPITAL -->
-                    <div class="wallet-sub-content" id="wallet-deposit-content">
-                        <div class="grid-two-cols">
-                            <!-- Datos del Depósito -->
-                            <div class="glass-card">
-                                <div class="card-header">
-                                    <span class="material-icons-round text-primary">add_circle_outline</span>
-                                    <h3>Añadir Capital al Portafolio</h3>
-                                </div>
-                                <p class="card-desc">Genera una dirección blockchain única para depositar capital. Las inversiones se activarán al recibir 1 confirmación de la red.</p>
-                                
-                                <div class="wallet-form">
-                                    <div class="form-group">
-                                        <label for="deposit-asset">Activo Blockchain a Depositar</label>
-                                        <select id="deposit-asset" class="custom-select">
-                                            <option value="USDT_TRC20">USDT (TRC20) - Recomendado</option>
-                                            <option value="USDT_ERC20">USDT (ERC20)</option>
-                                            <option value="BTC">Bitcoin (BTC)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="deposit-amount">Monto Planeado (Opcional - USD)</label>
-                                        <input type="number" id="deposit-amount" placeholder="Ej: $5,000" class="custom-input">
-                                    </div>
-
-                                    <div class="form-actions">
-                                        <button class="btn btn-primary" id="btn-generate-deposit">
-                                            <span class="material-icons-round">sync</span>
-                                            <span>Obtener Dirección de Fondeo</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Código de Depósito e Instrucciones -->
-                            <div class="glass-card" id="deposit-instructions-card" style="opacity: 0.5; pointer-events: none;">
-                                <div class="qr-wrapper">
-                                    <span class="qr-title">DIRECCIÓN DE DEPÓSITO INSTITUCIONAL</span>
-                                    
-                                    <div class="qr-code-mock">
-                                        <div id="qrcode-deposit-container" style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;color:#999;font-size:12px;">Esperando dirección...</div>
-                                        <div class="qr-asset-badge bg-secondary" id="deposit-qr-label">USDT (TRC20)</div>
-                                    </div>
-                                    
-                                    <div class="deposit-address-container">
-                                        <span class="qr-address-text" id="deposit-address-display">Dirección de depósito...</span>
-                                        <button class="btn btn-outline btn-compact" id="btn-copy-deposit" title="Copiar Dirección">
-                                            <span class="material-icons-round">content_copy</span>
-                                        </button>
-                                    </div>
-
-                                    <div class="alert-info-container">
-                                        <span class="material-icons-round">info</span>
-                                        <span>Solo envíe el activo especificado. El envío de otros tokens resultará en la pérdida permanente de fondos.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Withdrawal Queue Status -->
-                    <div class="glass-card" style="margin-top:24px;" id="withdrawal-queue-card">
-                        <div class="card-header" style="justify-content:space-between;">
-                            <div class="flex-align-center gap-6">
-                                <span class="material-icons-round text-primary">pending_actions</span>
-                                <h3>Estado de Retiros</h3>
-                            </div>
-                            <button class="btn btn-outline btn-compact" id="btn-export-csv" title="Exportar CSV">
-                                <span class="material-icons-round">download</span> CSV
-                            </button>
-                        </div>
-                        <p class="card-desc">Seguimiento en tiempo real de tus solicitudes de retiro.</p>
-                        <div id="withdrawal-queue-list">
-                            <div class="text-muted" style="padding:16px;text-align:center;font-size:13px;">No hay retiros recientes.</div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ================= TAB: SECURITY ================= -->
-                <section class="tab-content" id="tab-security">
-                    <div class="grid-two-cols">
-                        <!-- Demostración Cifrado AES-256 -->
-                        <div class="glass-card">
-                            <div class="card-header">
-                                <span class="material-icons-round text-primary">enhanced_encryption</span>
-                                <h3>Simulador de Cifrado AES-256 GCM</h3>
-                            </div>
-                            <p class="card-desc">Prueba cómo el servicio securiza los datos antes de guardarlos localmente en `flutter_secure_storage`.</p>
-
-                            <div class="crypto-box">
                                 <div class="form-group">
-                                    <label for="aes-input">Texto Claro a Cifrar</label>
-                                    <input type="text" id="aes-input" class="custom-input" placeholder="Ingresa datos sensibles aquí...">
+                                    <label>Activo</label>
+                                    <select id="withdraw-asset" class="custom-select">
+                                        <option value="USDT_TRC20">USDT (TRC20)</option>
+                                        <option value="USDT_ERC20">USDT (ERC20)</option>
+                                        <option value="BTC">Bitcoin (BTC)</option>
+                                        <option value="ETH">Ethereum (ETH)</option>
+                                    </select>
                                 </div>
-
-                                <div class="crypto-buttons">
-                                    <button class="btn btn-primary" id="btn-aes-encrypt">Cifrar Datos</button>
-                                    <button class="btn btn-outline" id="btn-aes-decrypt" disabled>Descifrar</button>
+                                <div class="form-group">
+                                    <label>Dirección de Destino</label>
+                                    <input type="text" id="wallet-address" class="custom-input" placeholder="Ingresa tu dirección de retiro">
                                 </div>
-
-                                <div class="crypto-results" style="display: none;" id="aes-results-container">
-                                    <div class="result-field">
-                                        <label>Criptograma Encriptado (Base64 + IV):</label>
-                                        <div class="code-container">
-                                            <code id="aes-cipher-output">...</code>
-                                        </div>
+                                <div class="form-group">
+                                    <label>Monto (USD)</label>
+                                    <input type="number" id="wallet-amount" class="custom-input" placeholder="100" min="10">
+                                    <span class="input-hint">Mínimo: $10 | Límite diario: $50,000</span>
+                                </div>
+                                <div class="withdraw-summary" id="withdraw-summary" style="display:none;">
+                                    <div class="summary-row">
+                                        <span>Monto</span>
+                                        <span id="summary-amount">$0.00</span>
                                     </div>
-                                    
-                                    <div class="result-field" id="aes-plain-container" style="display: none;">
-                                        <label class="text-success">Texto Descifrado:</label>
-                                        <div class="decrypted-box">
-                                            <span id="aes-plain-output">...</span>
+                                    <div class="summary-row">
+                                        <span>Comisión</span>
+                                        <span id="summary-fee">$0.00</span>
+                                    </div>
+                                    <div class="summary-row total">
+                                        <span>Recibirás</span>
+                                        <span id="summary-net">$0.00</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-lg" id="btn-show-qr" disabled>
+                                    <span class="material-icons-round">send</span>
+                                    Solicitar Retiro
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Transaction History -->
+                        <div class="wallet-section">
+                            <div class="section-header">
+                                <h3><span class="material-icons-round">history</span> Historial de Transacciones</h3>
+                            </div>
+                            <div class="tx-filters">
+                                <select id="tx-filter-type" class="custom-select">
+                                    <option value="">Todas</option>
+                                    <option value="deposit">Depósitos</option>
+                                    <option value="withdraw">Retiros</option>
+                                    <option value="roi_payout">ROI</option>
+                                    <option value="arbitrage">Arbitraje</option>
+                                </select>
+                                <input type="date" id="tx-filter-from" class="custom-input">
+                                <input type="date" id="tx-filter-to" class="custom-input">
+                                <button class="btn btn-outline btn-sm" id="btn-export-csv">
+                                    <span class="material-icons-round">download</span> Exportar CSV
+                                </button>
+                            </div>
+                            <div class="tx-list" id="tx-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== INVESTMENTS ==================== -->
+                <section class="tab-content" id="tab-investments">
+                    <div class="investments-container">
+                        <div class="section-header">
+                            <h3><span class="material-icons-round">savings</span> Mis Inversiones</h3>
+                        </div>
+                        <div class="investments-summary">
+                            <div class="invest-stat">
+                                <span class="invest-stat-label">Capital Invertido</span>
+                                <strong class="invest-stat-value" id="invest-total">$10,000.00</strong>
+                            </div>
+                            <div class="invest-stat">
+                                <span class="invest-stat-label">Ganancia Total</span>
+                                <strong class="invest-stat-value green" id="invest-profit">$342.10</strong>
+                            </div>
+                            <div class="invest-stat">
+                                <span class="invest-stat-label">ROI Promedio</span>
+                                <strong class="invest-stat-value" id="invest-roi">1.85%</strong>
+                            </div>
+                        </div>
+
+                        <div class="contracts-grid" id="investments-contracts"></div>
+
+                        <div class="section-header">
+                            <h3><span class="material-icons-round">calculate</span> Calculadora ROI</h3>
+                        </div>
+                        <div class="glass-card roi-calculator">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Monto a Invertir ($)</label>
+                                    <input type="number" id="calc-amount" class="custom-input" value="1000" min="100">
+                                </div>
+                                <div class="form-group">
+                                    <label>Plan</label>
+                                    <select id="calc-plan" class="custom-select">
+                                        <option value="silver">Silver (1.0% - 1.5%)</option>
+                                        <option value="gold" selected>Gold (1.5% - 2.0%)</option>
+                                        <option value="black">Black VIP (1.8% - 2.5%)</option>
+                                        <option value="interbank">Interbank (2.0% - 3.0%)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Período (días)</label>
+                                    <input type="number" id="calc-days" class="custom-input" value="30" min="1" max="365">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" id="btn-calc-roi">Calcular</button>
+                            <div class="calc-results" id="calc-results" style="display:none;">
+                                <div class="calc-result-row">
+                                    <span>Inversión Inicial</span>
+                                    <strong id="calc-initial">$1,000.00</strong>
+                                </div>
+                                <div class="calc-result-row">
+                                    <span>Ganancia Estimada</span>
+                                    <strong class="green" id="calc-profit">$0.00</strong>
+                                </div>
+                                <div class="calc-result-row total">
+                                    <span>Total Estimado</span>
+                                    <strong id="calc-total">$0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== GOARBIT ==================== -->
+                <section class="tab-content" id="tab-futinves">
+                    <div class="futinves-container">
+                        <div class="glass-card futinves-status-bar">
+                            <div class="futinves-status-header">
+                                <h3><span class="material-icons-round">currency_exchange</span> FutInvest — Motor de Arbitraje</h3>
+                                <span class="badge badge-success" id="futinves-status-badge">Activo</span>
+                            </div>
+                            <div class="futinves-exchanges-grid" id="futinves-exchanges">
+                                <div class="exchange-chip" data-exchange="binance"><span class="status-dot green"></span>Binance</div>
+                                <div class="exchange-chip" data-exchange="okx"><span class="status-dot green"></span>OKX</div>
+                                <div class="exchange-chip" data-exchange="bybit"><span class="status-dot green"></span>Bybit</div>
+                                <div class="exchange-chip" data-exchange="kucoin"><span class="status-dot green"></span>KuCoin</div>
+                                <div class="exchange-chip" data-exchange="gate"><span class="status-dot green"></span>Gate.io</div>
+                                <div class="exchange-chip" data-exchange="huobi"><span class="status-dot green"></span>Huobi</div>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="futinves-symbol">Par de Trading</label>
+                                    <select id="futinves-symbol" class="custom-select">
+                                        <option value="BTC/USDT">BTC/USDT</option>
+                                        <option value="ETH/USDT">ETH/USDT</option>
+                                        <option value="SOL/USDT">SOL/USDT</option>
+                                        <option value="BNB/USDT">BNB/USDT</option>
+                                        <option value="XRP/USDT">XRP/USDT</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="futinves-amount">Monto a Invertir (USD)</label>
+                                    <input type="number" id="futinves-amount" class="custom-input" min="10" value="100">
+                                </div>
+                            </div>
+                            <div class="btn-row">
+                                <button class="btn btn-primary" id="btn-futinves-scan">
+                                    <span class="material-icons-round">search</span> Escanear Par
+                                </button>
+                                <button class="btn btn-outline" id="btn-futinves-scan-all">
+                                    <span class="material-icons-round">search</span> Escanear Todo
+                                </button>
+                                <button class="btn btn-outline" id="btn-futinves-triangular">
+                                    <span class="material-icons-round">change_circle</span> Triangular
+                                </button>
+                            </div>
+                        </div>
+                        <div class="glass-card" id="futinves-results-card">
+                            <div class="results-header">
+                                <h4>Resultados del Escaneo</h4>
+                                <button class="btn btn-outline btn-compact" id="btn-futinves-refresh">
+                                    <span class="material-icons-round">refresh</span>
+                                </button>
+                            </div>
+                            <div id="futinves-results">
+                                <div class="empty-state">
+                                    <span class="material-icons-round">search</span>
+                                    <p>Inicia un escaneo para encontrar oportunidades de arbitraje</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="futinves-table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Par</th>
+                                        <th>Comprar</th>
+                                        <th>Precio Compra</th>
+                                        <th>Vender</th>
+                                        <th>Precio Venta</th>
+                                        <th>Spread</th>
+                                        <th>Ganancia</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="futinves-opportunities-body">
+                                    <tr><td colspan="8" class="text-center">Sin oportunidades</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="futinves-settings">
+                            <label class="toggle-row">
+                                <span>Auto-escaneo cada 30s</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="futinves-auto-scan">
+                                    <span class="slider round"></span>
+                                </label>
+                            </label>
+                        </div>
+                        <div class="futinves-auto-stats">
+                            <div class="auto-stat"><span class="auto-stat-label">Escaneos hoy</span><strong id="futinves-scan-count">0</strong></div>
+                            <div class="auto-stat"><span class="auto-stat-label">Oportunidades</span><strong id="futinves-opp-count">0</strong></div>
+                            <div class="auto-stat"><span class="auto-stat-label">Mejor ganancia</span><strong id="futinves-best-profit">$0.00</strong></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== NETWORK ==================== -->
+                <section class="tab-content" id="tab-network">
+                    <div class="network-container">
+                        <div class="network-controls">
+                            <button class="btn btn-outline btn-compact" id="btn-zoom-in"><span class="material-icons-round">zoom_in</span></button>
+                            <button class="btn btn-outline btn-compact" id="btn-zoom-out"><span class="material-icons-round">zoom_out</span></button>
+                            <button class="btn btn-outline btn-compact" id="btn-zoom-reset"><span class="material-icons-round">fit_screen</span></button>
+                        </div>
+                        <div class="network-tree-container">
+                            <div class="interactive-tree" id="interactive-tree">
+                                <div class="tree-node root">
+                                    <div class="node-avatar">Tú</div>
+                                    <div class="node-info">
+                                        <span class="node-name">Raíz Principal</span>
+                                        <span class="node-volume">Vol: $20,900</span>
+                                    </div>
+                                    <div class="node-points">
+                                        <span class="points-left">Izq: 12,500</span>
+                                        <span class="points-right">Der: 8,400</span>
+                                    </div>
+                                    <div class="tree-children">
+                                        <div class="tree-node left">
+                                            <div class="node-avatar">L1</div>
+                                            <div class="node-info">
+                                                <span class="node-name">Líder Izquierdo</span>
+                                                <span class="node-volume">Vol: $12,500</span>
+                                            </div>
+                                        </div>
+                                        <div class="tree-node right">
+                                            <div class="node-avatar">L2</div>
+                                            <div class="node-info">
+                                                <span class="node-name">Líder Derecho</span>
+                                                <span class="node-volume">Vol: $8,400</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="network-stats">
+                            <div class="network-stat">
+                                <span class="network-stat-label">Volumen Izquierdo</span>
+                                <strong>$12,500.00</strong>
+                            </div>
+                            <div class="network-stat">
+                                <span class="network-stat-label">Volumen Derecho</span>
+                                <strong>$8,400.00</strong>
+                            </div>
+                            <div class="network-stat">
+                                <span class="network-stat-label">Volumen Total</span>
+                                <strong>$20,900.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                        <!-- 2FA Authenticator TOTP -->
-                        <div class="glass-card">
-                            <div class="card-header">
-                                <div class="flex-row-between width-full">
-                                    <div class="flex-align-center">
-                                        <span class="material-icons-round text-secondary">phonelink_ring</span>
-                                        <h3>Simulador 2FA (TOTP)</h3>
-                                    </div>
+                <!-- ==================== SECURITY ==================== -->
+                <section class="tab-content" id="tab-security">
+                    <div class="security-container">
+                        <div class="section-header">
+                            <h3><span class="material-icons-round">shield</span> Centro de Seguridad</h3>
+                        </div>
+                        <div class="security-grid">
+                            <div class="glass-card">
+                                <h3><span class="material-icons-round">lock</span> Cifrado AES-256</h3>
+                                <p class="card-desc">Prueba el cifrado de nivel militar usado para proteger tus datos.</p>
+                                <div class="form-group">
+                                    <label>Texto a Cifrar/Descifrar</label>
+                                    <textarea id="aes-input" class="custom-input" rows="3" placeholder="Ingresa texto..."></textarea>
+                                </div>
+                                <div class="btn-row">
+                                    <button class="btn btn-primary" id="btn-aes-encrypt">Cifrar</button>
+                                    <button class="btn btn-outline" id="btn-aes-decrypt">Descifrar</button>
+                                </div>
+                                <div id="aes-results-container" style="display:none;">
+                                    <label>Resultado</label>
+                                    <textarea id="aes-cipher-output" class="custom-input" rows="3" readonly></textarea>
+                                </div>
+                            </div>
+                            <div class="glass-card">
+                                <h3><span class="material-icons-round">verified_user</span> Autenticación 2FA</h3>
+                                <p class="card-desc">Protege tu cuenta con autenticación de dos factores TOTP.</p>
+                                <div class="toggle-row">
+                                    <span>Activar TOTP</span>
                                     <label class="switch">
                                         <input type="checkbox" id="2fa-toggle">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
-                            </div>
-                            <p class="card-desc">Configura y simula el generador de códigos de seguridad temporales con expiración de 30 segundos.</p>
-
-                            <div class="totp-container" id="totp-display-area" style="opacity: 0.5; pointer-events: none;">
-                                <div class="totp-code-display">
-                                    <span id="totp-code">000 000</span>
-                                </div>
-                                
-                                <div class="totp-timer-bar">
-                                    <div class="totp-timer-fill" id="totp-timer-fill"></div>
-                                </div>
-                                <span class="totp-timer-text" id="totp-timer-text">El código cambiará en 30 segundos</span>
-
-                                <div class="totp-info-box">
-                                    <span class="material-icons-round text-primary">info</span>
-                                    <div>
-                                        <strong>Llave de Semilla:</strong>
-                                        <code>FUTINVEST777TRUSTKEY</code>
+                                <div id="totp-display-area" style="display:none;">
+                                    <label>Código TOTP</label>
+                                    <div class="totp-code-display">
+                                        <span id="totp-code">—</span>
+                                        <div class="totp-timer">
+                                            <div class="totp-timer-fill" id="totp-timer-fill"></div>
+                                            <span id="totp-timer-text">30s</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -706,264 +807,292 @@
                     </div>
                 </section>
 
-                <!-- ================= TAB: NETWORK ================= -->
-                <section class="tab-content" id="tab-network">
-                    <div class="network-container">
-                        <div class="network-sidebar">
-                            <div class="glass-card compact-card">
-                                <h3>Estadísticas de Red</h3>
-                                <p class="card-desc">Volúmenes acumulados en ambos lados de la estructura binaria.</p>
-                                
-                                <div class="points-grid">
-                                    <div class="point-box left-side">
-                                        <span class="pb-lbl">LADO IZQUIERDO</span>
-                                        <span class="pb-val">12,500 pts</span>
-                                    </div>
-                                    <div class="point-box right-side">
-                                        <span class="pb-lbl">LADO DERECHO</span>
-                                        <span class="pb-val">8,400 pts</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="glass-card compact-card" id="node-details-card">
-                                <h3 id="node-details-name">Red Binaria Global</h3>
-                                <span class="badge" id="node-details-role">Organización</span>
-                                <div class="node-stats">
-                                    <div class="node-stat-item">
-                                        <span>Volumen Acumulado:</span>
-                                        <strong id="node-details-volume">$20,900 USD</strong>
-                                    </div>
-                                    <div class="node-stat-item">
-                                        <span>Puntos Izquierda:</span>
-                                        <strong id="node-details-pts-left">12,500 pts</strong>
-                                    </div>
-                                    <div class="node-stat-item">
-                                        <span>Puntos Derecha:</span>
-                                        <strong id="node-details-pts-right">8,400 pts</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Lienzo del Árbol Binario Interactivo -->
-                        <div class="network-canvas-area">
-                            <div class="canvas-header-controls">
-                                <span class="canvas-title">Estructura Organizacional</span>
-                                <div class="canvas-controls">
-                                    <button class="btn-icon" id="btn-zoom-in" title="Acercar"><span class="material-icons-round">zoom_in</span></button>
-                                    <button class="btn-icon" id="btn-zoom-out" title="Alejar"><span class="material-icons-round">zoom_out</span></button>
-                                    <button class="btn-icon" id="btn-zoom-reset" title="Restablecer"><span class="material-icons-round">filter_center_focus</span></button>
-                                </div>
-                            </div>
-
-                            <div class="canvas-wrapper" id="canvas-wrapper">
-                                <div class="interactive-tree" id="interactive-tree">
-                                    <!-- Árbol dibujado mediante SVG interactivo y responsive -->
-                                    <svg viewBox="0 0 800 500" width="100%" height="100%" class="tree-svg">
-                                        <!-- Líneas de Conexión -->
-                                        <g class="tree-connections">
-                                            <!-- Nivel 0 -> Nivel 1 -->
-                                            <line x1="400" y1="50" x2="200" y2="180" class="connector-line" />
-                                            <line x1="400" y1="50" x2="600" y2="180" class="connector-line" />
-                                            <!-- Nivel 1 -> Nivel 2 -->
-                                            <line x1="200" y1="180" x2="100" y2="310" class="connector-line" />
-                                            <line x1="200" y1="180" x2="300" y2="310" class="connector-line" />
-                                            <line x1="600" y1="180" x2="500" y2="310" class="connector-line" />
-                                            <line x1="600" y1="180" x2="700" y2="310" class="connector-line" />
-                                        </g>
-
-                                        <!-- Nodos Interactivos -->
-                                        <g class="tree-nodes">
-                                            <!-- Nivel 0: Raíz (Tú) -->
-                                            <g class="tree-node active-node" id="node-root" data-name="Tú (Raíz)" data-role="Principal" data-left="12,500" data-right="8,400" data-volume="20,900">
-                                                <circle cx="400" cy="50" r="28" class="node-bg primary-node-bg" />
-                                                <text x="400" y="55" class="node-icon material-icons-round">person</text>
-                                                <text x="400" y="95" class="node-label">Tú (Raíz)</text>
-                                            </g>
-
-                                            <!-- Nivel 1: Líder Izquierda -->
-                                            <g class="tree-node" id="node-l1-izq" data-name="Líder Izquierdo" data-role="Lado Izquierdo" data-left="7,200" data-right="5,300" data-volume="12,500">
-                                                <circle cx="200" cy="180" r="24" class="node-bg left-node-bg" />
-                                                <text x="200" y="185" class="node-icon material-icons-round">person</text>
-                                                <text x="200" y="220" class="node-label">Líder Izq</text>
-                                            </g>
-                                            
-                                            <!-- Nivel 1: Líder Derecha -->
-                                            <g class="tree-node" id="node-l1-der" data-name="Líder Derecho" data-role="Lado Derecho" data-left="4,100" data-right="4,300" data-volume="8,400">
-                                                <circle cx="600" cy="180" r="24" class="node-bg right-node-bg" />
-                                                <text x="600" y="185" class="node-icon material-icons-round">person</text>
-                                                <text x="600" y="220" class="node-label">Líder Der</text>
-                                            </g>
-
-                                            <!-- Nivel 2: Hijos Izquierda -->
-                                            <g class="tree-node" id="node-l2-a" data-name="Socio A" data-role="Nivel 2" data-left="3,500" data-right="3,700" data-volume="7,200">
-                                                <circle cx="100" cy="310" r="20" class="node-bg child-node-bg" />
-                                                <text x="100" y="315" class="node-icon material-icons-round">person</text>
-                                                <text x="100" y="348" class="node-label">Socio A</text>
-                                            </g>
-
-                                            <g class="tree-node" id="node-l2-b" data-name="Socio B" data-role="Nivel 2" data-left="2,100" data-right="3,200" data-volume="5,300">
-                                                <circle cx="300" cy="310" r="20" class="node-bg child-node-bg" />
-                                                <text x="300" y="315" class="node-icon material-icons-round">person</text>
-                                                <text x="300" y="348" class="node-label">Socio B</text>
-                                            </g>
-
-                                            <!-- Nivel 2: Hijos Derecha -->
-                                            <g class="tree-node" id="node-l2-c" data-name="Socio C" data-role="Nivel 2" data-left="2,000" data-right="2,100" data-volume="4,100">
-                                                <circle cx="500" cy="310" r="20" class="node-bg child-node-bg" />
-                                                <text x="500" y="315" class="node-icon material-icons-round">person</text>
-                                                <text x="500" y="348" class="node-label">Socio C</text>
-                                            </g>
-
-                                            <g class="tree-node" id="node-l2-d" data-name="Socio D" data-role="Nivel 2" data-left="2,200" data-right="2,100" data-volume="4,300">
-                                                <circle cx="700" cy="310" r="20" class="node-bg child-node-bg" />
-                                                <text x="700" y="315" class="node-icon material-icons-round">person</text>
-                                                <text x="700" y="348" class="node-label">Socio D</text>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ================= TAB: CODEHUB ================= -->
-                <section class="tab-content" id="tab-codehub">
-                    <div class="codehub-container">
-                        <div class="codehub-sidebar">
-                            <h3 class="sidebar-title">Estructura lib/</h3>
-                            <div class="folder-tree">
-                                <div class="folder-item">
-                                    <span class="material-icons-round">folder_open</span>
-                                    <span>lib</span>
-                                </div>
-                                <div class="folder-subitems">
-                                    <div class="folder-item sub">
-                                        <span class="material-icons-round">folder</span>
-                                        <span>theme</span>
-                                    </div>
-                                    <div class="folder-subitems">
-                                        <button class="file-item active" data-file="app_theme">
-                                            <span class="material-icons-round text-amber">code</span>
-                                            <span>app_theme.dart</span>
-                                        </button>
-                                    </div>
-
-                                    <div class="folder-item sub">
-                                        <span class="material-icons-round">folder</span>
-                                        <span>services</span>
-                                    </div>
-                                    <div class="folder-subitems">
-                                        <button class="file-item" data-file="encryption_service">
-                                            <span class="material-icons-round text-amber">code</span>
-                                            <span>encryption_service.dart</span>
-                                        </button>
-                                    </div>
-
-                                    <div class="folder-item sub">
-                                        <span class="material-icons-round">folder</span>
-                                        <span>screens</span>
-                                    </div>
-                                    <div class="folder-subitems">
-                                        <button class="file-item" data-file="dashboard_screen">
-                                            <span class="material-icons-round text-amber">code</span>
-                                            <span>dashboard_screen.dart</span>
-                                        </button>
-                                        <button class="file-item" data-file="wallet_screen">
-                                            <span class="material-icons-round text-amber">code</span>
-                                            <span>wallet_screen.dart</span>
-                                        </button>
-                                        <button class="file-item" data-file="security_screen">
-                                            <span class="material-icons-round text-amber">code</span>
-                                            <span>security_screen.dart</span>
-                                        </button>
-                                        <button class="file-item" data-file="binary_tree_screen">
-                                            <span class="material-icons-round text-amber">code</span>
-                                            <span>binary_tree_screen.dart</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="codehub-viewer">
-                            <div class="viewer-header">
-                                <div class="active-file-badge">
-                                    <span class="material-icons-round text-amber">code</span>
-                                    <span id="active-file-name">lib/theme/app_theme.dart</span>
-                                </div>
-                                <button class="btn btn-outline btn-compact" id="btn-copy-code">
-                                    <span class="material-icons-round">content_copy</span>
-                                    <span>Copiar Código</span>
-                                </button>
-                            </div>
-                            <div class="viewer-code">
-                                <pre><code class="language-dart" id="code-display">...</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ================= TAB: PROFILE ================= -->
+                <!-- ==================== PROFILE ==================== -->
                 <section class="tab-content" id="tab-profile">
                     <div class="profile-container">
+                        <!-- Profile Header -->
                         <div class="profile-header">
-                            <div class="profile-avatar">
-                                <span class="material-icons-round" style="font-size:48px">person</span>
+                            <div class="prof-avatar" id="prof-avatar-circle">FU</div>
+                            <div class="prof-header-info">
+                                <h2 id="prof-name">Cargando...</h2>
+                                <span class="prof-email" id="prof-email">—</span>
+                                <div class="prof-badges">
+                                    <span class="prof-badge" id="prof-tier-badge">—</span>
+                                    <span class="prof-badge prof-kyc" id="prof-kyc-badge">—</span>
+                                    <span class="prof-badge prof-2fa" id="prof-2fa-badge">2FA No</span>
+                                    <span class="prof-badge prof-risk" id="prof-risk-badge">—</span>
+                                </div>
                             </div>
-                            <h2 id="profile-name">Cargando...</h2>
-                            <span class="profile-tier" id="profile-tier"></span>
                         </div>
-                        <div class="profile-grid">
-                            <div class="profile-card">
-                                <h3><span class="material-icons-round">account_balance_wallet</span> Mi Cartera</h3>
-                                <div class="profile-balance" id="profile-balance">$0.00</div>
-                                <div class="profile-stats">
-                                    <div><span>Ganancias</span><strong id="profile-earnings">$0.00</strong></div>
-                                    <div><span>ROI Diario</span><strong id="profile-roi">0%</strong></div>
-                                    <div><span>Contratos</span><strong id="profile-contracts">0</strong></div>
+
+                        <!-- Profile Stats -->
+                        <div class="profile-stats">
+                            <div class="stat-card"><strong class="prof-stat-value" id="prof-balance">$0.00</strong><span>Balance</span></div>
+                            <div class="stat-card"><strong class="prof-stat-value green" id="prof-earnings">$0.00</strong><span>Ganancias</span></div>
+                            <div class="stat-card"><strong class="prof-stat-value" id="prof-roi">0%</strong><span>ROI Diario</span></div>
+                            <div class="stat-card"><strong class="prof-stat-value" id="prof-contracts">0</strong><span>Contratos</span></div>
+                        </div>
+
+                        <!-- Profile Tabs -->
+                        <div class="profile-tabs">
+                            <button class="profile-tab active" data-profile-tab="overview">
+                                <span class="material-icons-round">dashboard</span> Resumen
+                            </button>
+                            <button class="profile-tab" data-profile-tab="futinves">
+                                <span class="material-icons-round">currency_exchange</span> FutInvest
+                            </button>
+                            <button class="profile-tab" data-profile-tab="activity">
+                                <span class="material-icons-round">history</span> Actividad
+                            </button>
+                            <button class="profile-tab" data-profile-tab="security">
+                                <span class="material-icons-round">shield</span> Seguridad
+                            </button>
+                            <button class="profile-tab" data-profile-tab="settings">
+                                <span class="material-icons-round">settings</span> Ajustes
+                            </button>
+                        </div>
+
+                        <!-- Overview Tab -->
+                        <div class="profile-tab-content active" id="profile-tab-overview">
+                            <div class="profile-grid">
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">person</span> Información Personal</h3>
+                                    <div class="pii-grid">
+                                        <div class="pii-row"><span>Miembro desde</span><strong class="pii-val" id="prof-member-since">—</strong></div>
+                                        <div class="pii-row"><span>Tier</span><strong class="pii-val" id="prof-tier-name">—</strong></div>
+                                        <div class="pii-row"><span>KYC</span><strong class="pii-val" id="prof-kyc-status">—</strong></div>
+                                        <div class="pii-row"><span>2FA</span><strong class="pii-val" id="prof-2fa-status">—</strong></div>
+                                        <div class="pii-row"><span>Rol</span><strong class="pii-val" id="prof-role">—</strong></div>
+                                        <div class="pii-row"><span>ID Usuario</span><strong class="pii-val mono" id="prof-user-id">—</strong></div>
+                                    </div>
+                                </div>
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">people</span> Código de Referido</h3>
+                                    <div class="ref-row">
+                                        <code class="ref-code" id="prof-ref-code">—</code>
+                                        <button class="btn btn-compact btn-outline" id="prof-copy-ref"><span class="material-icons-round">content_copy</span></button>
+                                    </div>
+                                    <div class="ref-stats">
+                                        <span>Referidos: <strong id="prof-referral-count">0</strong></span>
+                                        <span>Ganado: <strong id="prof-referral-earnings">$0</strong></span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="profile-card">
-                                <h3><span class="material-icons-round">info</span> Mi Información</h3>
-                                <div class="profile-info-list">
-                                    <div><span>Email</span><strong id="profile-email">-</strong></div>
-                                    <div><span>Membresía</span><strong id="profile-since">-</strong></div>
-                                    <div><span>KYC</span><strong id="profile-kyc">-</strong></div>
-                                    <div><span>2FA</span><strong id="profile-2fa">-</strong></div>
+                                <h3><span class="material-icons-round">show_chart</span> Rendimiento 30 Días</h3>
+                                <canvas id="prof-perf-chart" width="400" height="180"></canvas>
+                            </div>
+                            <div class="profile-grid">
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">pie_chart</span> Distribución de Activos</h3>
+                                    <div class="asset-allocation" id="prof-asset-allocation">
+                                        <div class="asset-item"><span class="asset-dot" style="background:#00D4FF"></span><span>USDT TRC20</span><strong id="alloc-usdt-trc">0%</strong></div>
+                                        <div class="asset-item"><span class="asset-dot" style="background:#00FF88"></span><span>USDT ERC20</span><strong id="alloc-usdt-erc">0%</strong></div>
+                                        <div class="asset-item"><span class="asset-dot" style="background:#F7931A"></span><span>BTC</span><strong id="alloc-btc">0%</strong></div>
+                                        <div class="asset-item"><span class="asset-dot" style="background:#627EEA"></span><span>ETH</span><strong id="alloc-eth">0%</strong></div>
+                                        <div class="asset-item"><span class="asset-dot" style="background:#9945FF"></span><span>SOL</span><strong id="alloc-sol">0%</strong></div>
+                                    </div>
+                                </div>
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">flag</span> Perfil de Riesgo</h3>
+                                    <div class="risk-bar">
+                                        <div class="risk-seg conservative" id="risk-conservative">Conservador</div>
+                                        <div class="risk-seg moderate active" id="risk-moderate">Moderado</div>
+                                        <div class="risk-seg aggressive" id="risk-aggressive">Agresivo</div>
+                                    </div>
+                                    <p id="risk-description">Balance entre riesgo y rendimiento.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FutInvest Tab -->
+                        <div class="profile-tab-content" id="profile-tab-futinves">
+                            <div class="profile-card futinves-profile-card">
+                                <div class="futinves-profile-header">
+                                    <h3><span class="material-icons-round">currency_exchange</span> FutInvest — Motor de Arbitraje</h3>
+                                    <span class="badge badge-success" id="futinves-status-badge">Activo</span>
+                                </div>
+                                <div class="futinves-exchanges-grid" id="futinves-exchanges">
+                                    <div class="exchange-chip"><span class="status-dot green"></span>Binance</div>
+                                    <div class="exchange-chip"><span class="status-dot green"></span>OKX</div>
+                                    <div class="exchange-chip"><span class="status-dot green"></span>Bybit</div>
+                                    <div class="exchange-chip"><span class="status-dot green"></span>KuCoin</div>
+                                    <div class="exchange-chip"><span class="status-dot green"></span>Gate.io</div>
+                                    <div class="exchange-chip"><span class="status-dot green"></span>Huobi</div>
+                                </div>
+                            </div>
+                            <div class="futinves-profile-stats" id="futinves-profile-stats">
+                                <div class="futinves-stat-card">
+                                    <span class="futinves-stat-label">Escaneos Totales</span>
+                                    <strong class="futinves-stat-value" id="futinves-total-scans">0</strong>
+                                </div>
+                                <div class="futinves-stat-card">
+                                    <span class="futinves-stat-label">Oportunidades Rentables</span>
+                                    <strong class="futinves-stat-value green" id="futinves-profitable">0</strong>
+                                </div>
+                                <div class="futinves-stat-card">
+                                    <span class="futinves-stat-label">Ganancia Total</span>
+                                    <strong class="futinves-stat-value green" id="futinves-total-profit">$0.00</strong>
+                                </div>
+                                <div class="futinves-stat-card">
+                                    <span class="futinves-stat-label">Mejor Ganancia</span>
+                                    <strong class="futinves-stat-value green" id="futinves-profile-best-profit">$0.00</strong>
+                                </div>
+                                <div class="futinves-stat-card">
+                                    <span class="futinves-stat-label">Arbitrajes Ejecutados</span>
+                                    <strong class="futinves-stat-value" id="futinves-executed">0</strong>
+                                </div>
+                            </div>
+                            <div class="profile-grid">
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">settings</span> Configuración</h3>
+                                    <div class="futinves-config" id="futinves-config">
+                                        <div class="futinves-config-row">
+                                            <label class="toggle-row">
+                                                <span>Auto-ejecución</span>
+                                                <label class="switch">
+                                                    <input type="checkbox" id="futinves-auto-execute">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </label>
+                                        </div>
+                                        <div class="futinves-config-row">
+                                            <label>Ganancia mínima ($)</label>
+                                            <input type="number" id="futinves-min-profit" class="custom-input" min="0" step="0.1" value="1.0">
+                                        </div>
+                                        <div class="futinves-config-row">
+                                            <label>Máximo por trade ($)</label>
+                                            <input type="number" id="futinves-max-trade" class="custom-input" min="10" step="10" value="10000">
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" id="btn-save-futinves-config">Guardar Configuración</button>
+                                    </div>
+                                </div>
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">auto_awesome</span> Auto-escaneo</h3>
+                                    <div class="futinves-auto-stats">
+                                        <div class="auto-stat"><span class="auto-stat-label">Escaneos hoy</span><strong id="futinves-scan-count">0</strong></div>
+                                        <div class="auto-stat"><span class="auto-stat-label">Oportunidades</span><strong id="futinves-opp-count">0</strong></div>
+                                        <div class="auto-stat"><span class="auto-stat-label">Mejor ganancia</span><strong id="futinves-best-profit">$0.00</strong></div>
+                                    </div>
+                                    <label class="toggle-row">
+                                        <span>Auto-escaneo cada 30s</span>
+                                        <label class="switch">
+                                            <input type="checkbox" id="futinves-auto-scan">
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </label>
                                 </div>
                             </div>
                             <div class="profile-card">
-                                <h3><span class="material-icons-round">swap_horiz</span> Acción Rápida</h3>
-                                <div class="profile-actions">
-                                    <button class="profile-action-btn" onclick="switchTab('wallet')">
-                                        <span class="material-icons-round">add_circle</span> Depositar
-                                    </button>
-                                    <button class="profile-action-btn" onclick="switchTab('wallet')">
-                                        <span class="material-icons-round">logout</span> Retirar
-                                    </button>
+                                <h3><span class="material-icons-round">history</span> Escaneos Recientes</h3>
+                                <div class="futinves-recent-scans" id="futinves-recent-scans"></div>
+                            </div>
+                            <div class="profile-card">
+                                <h3><span class="material-icons-round">check_circle</span> Arbitrajes Ejecutados</h3>
+                                <div class="futinves-executed-trades" id="futinves-executed-trades"></div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Tab -->
+                        <div class="profile-tab-content" id="profile-tab-activity">
+                            <div class="profile-card">
+                                <h3><span class="material-icons-round">history</span> Historial de Transacciones</h3>
+                                <div class="prof-tx-filters">
+                                    <select id="prof-tx-filter-type" class="custom-select">
+                                        <option value="">Todos</option>
+                                        <option value="deposit">Depósitos</option>
+                                        <option value="withdraw">Retiros</option>
+                                        <option value="roi_payout">ROI</option>
+                                    </select>
+                                    <input type="date" id="prof-tx-filter-from" class="custom-input">
+                                    <input type="date" id="prof-tx-filter-to" class="custom-input">
+                                    <button class="btn btn-outline btn-compact" id="btn-export-csv"><span class="material-icons-round">download</span> CSV</button>
+                                </div>
+                                <div id="prof-tx-body"></div>
+                                <div class="prof-tx-pagination" id="prof-tx-pagination"></div>
+                            </div>
+                            <div class="profile-grid">
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">flag</span> Objetivos de Inversión</h3>
+                                    <div id="prof-goals-list"></div>
+                                    <button class="btn btn-outline btn-compact" id="btn-add-goal"><span class="material-icons-round">add</span> Nuevo Objetivo</button>
+                                </div>
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">emoji_events</span> Logros</h3>
+                                    <div class="prof-achievements" id="prof-achievements"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Tab -->
+                        <div class="profile-tab-content" id="profile-tab-security">
+                            <div class="profile-grid">
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">shield</span> Registro de Seguridad</h3>
+                                    <div class="prof-security-log" id="prof-security-log"></div>
+                                </div>
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">devices</span> Dispositivos Activos</h3>
+                                    <div class="prof-devices" id="prof-devices"></div>
+                                    <button class="btn btn-outline btn-compact" id="btn-close-all-sessions"><span class="material-icons-round">logout</span> Cerrar Todas las Sesiones</button>
                                 </div>
                             </div>
                             <div class="profile-card">
-                                <h3><span class="material-icons-round">receipt</span> Últimos Movimientos</h3>
-                                <div id="profile-recent-tx">
-                                    <p style="color:var(--text-secondary);text-align:center;padding:20px">Cargando...</p>
+                                <h3><span class="material-icons-round">key</span> API Keys</h3>
+                                <div id="prof-api-keys"></div>
+                                <button class="btn btn-outline btn-compact" id="btn-create-api-key"><span class="material-icons-round">add</span> Crear API Key</button>
+                            </div>
+                            <div class="profile-card">
+                                <h3><span class="material-icons-round">badge</span> Documentos KYC</h3>
+                                <div class="prof-kyc-docs" id="prof-kyc-docs"></div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Tab -->
+                        <div class="profile-tab-content" id="profile-tab-settings">
+                            <div class="profile-grid">
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">checklist</span> Completitud del Perfil</h3>
+                                    <div class="completion-bar">
+                                        <span class="completion-percent" id="prof-completion-percent">0%</span>
+                                        <div class="completion-track"><div class="completion-fill" id="prof-completion-fill" style="width:0%"></div></div>
+                                    </div>
+                                    <div class="completion-steps" id="prof-completion-steps"></div>
+                                </div>
+                                <div class="profile-card">
+                                    <h3><span class="material-icons-round">speed</span> Límites de Retiro</h3>
+                                    <div class="limit-row">
+                                        <span>Diario</span>
+                                        <div class="limit-bar"><div class="limit-fill" id="prof-limit-daily-fill" style="width:0%"></div></div>
+                                        <span class="limit-value" id="prof-limit-daily">$0 / $50,000</span>
+                                    </div>
+                                    <div class="limit-row">
+                                        <span>Mensual</span>
+                                        <div class="limit-bar"><div class="limit-fill" id="prof-limit-monthly-fill" style="width:0%"></div></div>
+                                        <span class="limit-value" id="prof-limit-monthly">$0 / $500,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profile-card">
+                                <h3><span class="material-icons-round">notifications</span> Preferencias de Notificación</h3>
+                                <div class="notif-grid">
+                                    <label class="toggle-row"><span>ROI Diario</span><label class="switch"><input type="checkbox" id="notif-roi" checked><span class="slider round"></span></label></label>
+                                    <label class="toggle-row"><span>Retiros</span><label class="switch"><input type="checkbox" id="notif-withdraw" checked><span class="slider round"></span></label></label>
+                                    <label class="toggle-row"><span>Depósitos</span><label class="switch"><input type="checkbox" id="notif-deposit" checked><span class="slider round"></span></label></label>
+                                    <label class="toggle-row"><span>Seguridad</span><label class="switch"><input type="checkbox" id="notif-security" checked><span class="slider round"></span></label></label>
+                                    <label class="toggle-row"><span>Arbitraje</span><label class="switch"><input type="checkbox" id="notif-arbitrage"><span class="slider round"></span></label></label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ================= TAB: SETTINGS ================= -->
+                <!-- ==================== SETTINGS ==================== -->
                 <section class="tab-content" id="tab-settings">
                     <div class="settings-grid">
-                        <div class="admin-section">
-                            <div class="admin-section-header">
-                                <h3><span class="material-icons-round">lock</span> Cambiar Contraseña</h3>
-                            </div>
-                            <form id="settings-password-form" style="display:flex;flex-direction:column;gap:12px;">
+                        <div class="glass-card">
+                            <h3><span class="material-icons-round">lock</span> Cambiar Contraseña</h3>
+                            <form id="settings-password-form">
                                 <div class="form-group">
                                     <label>Contraseña Actual</label>
                                     <input type="password" id="settings-current-password" class="custom-input" required>
@@ -972,67 +1101,34 @@
                                     <label>Nueva Contraseña</label>
                                     <input type="password" id="settings-new-password" class="custom-input" required minlength="6">
                                 </div>
-                                <button type="submit" class="btn btn-primary" style="align-self:flex-start;">
-                                    <span class="material-icons-round">save</span> Actualizar Contraseña
-                                </button>
+                                <button type="submit" class="btn btn-primary">Actualizar Contraseña</button>
                             </form>
                         </div>
-
-                        <div class="admin-section">
-                            <div class="admin-section-header">
-                                <h3><span class="material-icons-round">notifications</span> Notificaciones</h3>
-                            </div>
-                            <div style="display:flex;flex-direction:column;gap:16px;">
-                                <label class="flex-row-between" style="cursor:pointer;">
-                                    <span style="color:var(--text-secondary);font-size:14px;">Notificaciones por Email</span>
-                                    <label class="switch">
-                                        <input type="checkbox" id="settings-email-notif" checked>
-                                        <span class="slider round"></span>
-                                    </label>
-                                </label>
-                                <label class="flex-row-between" style="cursor:pointer;">
-                                    <span style="color:var(--text-secondary);font-size:14px;">Notificaciones Push</span>
-                                    <label class="switch">
-                                        <input type="checkbox" id="settings-push-notif">
-                                        <span class="slider round"></span>
-                                    </label>
-                                </label>
-                                <button class="btn btn-primary btn-sm" id="btn-save-notifications" style="align-self:flex-start;">
-                                    <span class="material-icons-round">save</span> Guardar
-                                </button>
+                        <div class="glass-card">
+                            <h3><span class="material-icons-round">notifications</span> Notificaciones</h3>
+                            <label class="toggle-row"><span>Email</span><label class="switch"><input type="checkbox" id="settings-email-notif" checked><span class="slider round"></span></label></label>
+                            <label class="toggle-row"><span>Push</span><label class="switch"><input type="checkbox" id="settings-push-notif"><span class="slider round"></span></label></label>
+                            <button class="btn btn-primary btn-sm" id="btn-save-notifications">Guardar</button>
+                        </div>
+                        <div class="glass-card">
+                            <h3><span class="material-icons-round">people</span> Código de Referido</h3>
+                            <code id="settings-referral-code">-</code>
+                            <button class="btn btn-sm btn-outline" id="btn-copy-referral"><span class="material-icons-round">content_copy</span></button>
+                            <div class="ref-stats">
+                                <span>Referidos: <strong id="settings-referral-count">0</strong></span>
+                                <span>Ganado: <strong id="settings-referral-earnings">$0</strong></span>
                             </div>
                         </div>
-
-                        <div class="admin-section">
-                            <div class="admin-section-header">
-                                <h3><span class="material-icons-round">people</span> Código de Referido</h3>
-                            </div>
-                            <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">Invita a otros y gana un <strong style="color:#00D4FF;">5%</strong> de su primer depósito.</p>
-                            <div style="display:flex;gap:10px;align-items:center;">
-                                <code id="settings-referral-code" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#00D4FF;background:rgba(0,0,0,0.2);padding:12px 16px;border-radius:8px;border:1px solid rgba(0,212,255,0.1);">-</code>
-                                <button class="btn btn-sm btn-outline" id="btn-copy-referral">
-                                    <span class="material-icons-round">content_copy</span>
-                                </button>
-                            </div>
-                            <div style="margin-top:12px;display:flex;gap:16px;">
-                                <span style="color:var(--text-muted);font-size:12px;">Referidos: <strong id="settings-referral-count" style="color:#00D4FF;">0</strong></span>
-                                <span style="color:var(--text-muted);font-size:12px;">Ganado: <strong id="settings-referral-earnings" style="color:#00FF88;">$0</strong></span>
-                            </div>
-                        </div>
-
-                        <div class="admin-section">
-                            <div class="admin-section-header">
-                                <h3><span class="material-icons-round">badge</span> Verificación KYC</h3>
-                            </div>
-                            <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">Sube tu documento de identidad para verificar tu cuenta.</p>
+                        <div class="glass-card">
+                            <h3><span class="material-icons-round">badge</span> Verificación KYC</h3>
                             <div id="kyc-status-badge" class="kyc-status-badge kyc-status-pending">
                                 <span class="material-icons-round">hourglass_empty</span>
-                                <span>Pendiente de verificación</span>
+                                <span>Pendiente</span>
                             </div>
-                            <form id="kyc-upload-form" style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
+                            <form id="kyc-upload-form">
                                 <div class="form-group">
                                     <label>Tipo de Documento</label>
-                                    <select id="kyc-doc-type" class="custom-input">
+                                    <select id="kyc-doc-type" class="custom-select">
                                         <option value="id_front">DNI/Cédula (Frente)</option>
                                         <option value="id_back">DNI/Cédula (Reverso)</option>
                                         <option value="passport">Pasaporte</option>
@@ -1041,167 +1137,72 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Archivo (JPG, PNG, PDF)</label>
+                                    <label>Archivo</label>
                                     <input type="file" id="kyc-file" accept="image/jpeg,image/png,application/pdf" class="custom-input" required>
                                 </div>
-                                <div id="kyc-upload-preview" style="display:none;max-width:200px;border-radius:8px;overflow:hidden;border:1px solid rgba(0,212,255,0.1);"></div>
-                                <button type="submit" class="btn btn-primary" style="align-self:flex-start;">
-                                    <span class="material-icons-round">upload</span> Subir Documento
-                                </button>
+                                <button type="submit" class="btn btn-primary">Subir Documento</button>
                             </form>
-                            <p id="kyc-upload-msg" style="font-size:12px;margin-top:8px;display:none;"></p>
                         </div>
-
-                        <div class="admin-section critical-card">
-                            <div class="admin-section-header">
-                                <h3 style="color:var(--neon-magenta);"><span class="material-icons-round">delete_forever</span> Eliminar Cuenta</h3>
-                            </div>
-                            <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">Esta acción es irreversible. Se eliminarán tus datos personales y se cerrarán todas las sesiones.</p>
-                            <form id="settings-delete-form" style="display:flex;flex-direction:column;gap:12px;">
+                        <div class="glass-card critical-card">
+                            <h3 style="color:var(--red-primary);"><span class="material-icons-round">delete_forever</span> Eliminar Cuenta</h3>
+                            <p>Esta acción es irreversible.</p>
+                            <form id="settings-delete-form">
                                 <div class="form-group">
-                                    <label>Confirma tu contraseña para eliminar la cuenta</label>
+                                    <label>Confirma tu contraseña</label>
                                     <input type="password" id="settings-delete-password" class="custom-input" required>
                                 </div>
-                                <button type="submit" class="btn btn-secondary" style="align-self:flex-start;">
-                                    <span class="material-icons-round">warning</span> Eliminar mi Cuenta
-                                </button>
+                                <button type="submit" class="btn btn-secondary">Eliminar mi Cuenta</button>
                             </form>
                         </div>
                     </div>
                 </section>
 
-                <!-- ================= TAB: ADMIN ================= -->
+                <!-- ==================== ADMIN ==================== -->
                 <section class="tab-content" id="tab-admin">
                     <div class="admin-stats-grid">
-                        <div class="stat-card" id="admin-stat-users">
-                            <span class="stat-icon material-icons-round">people</span>
-                            <div class="stat-info">
-                                <span class="stat-value">-</span>
-                                <span class="stat-label">Usuarios Totales</span>
-                            </div>
-                        </div>
-                        <div class="stat-card" id="admin-stat-deposits">
-                            <span class="stat-icon material-icons-round">arrow_downward</span>
-                            <div class="stat-info">
-                                <span class="stat-value">-</span>
-                                <span class="stat-label">Depósitos Totales</span>
-                            </div>
-                        </div>
-                        <div class="stat-card" id="admin-stat-withdrawals">
-                            <span class="stat-icon material-icons-round">arrow_upward</span>
-                            <div class="stat-info">
-                                <span class="stat-value">-</span>
-                                <span class="stat-label">Retiros Totales</span>
-                            </div>
-                        </div>
-                        <div class="stat-card" id="admin-stat-pending">
-                            <span class="stat-icon material-icons-round">hourglass_empty</span>
-                            <div class="stat-info">
-                                <span class="stat-value">-</span>
-                                <span class="stat-label">Retiros Pendientes</span>
-                            </div>
-                        </div>
-                        <div class="stat-card" id="admin-stat-fees">
-                            <span class="stat-icon material-icons-round">receipt</span>
-                            <div class="stat-info">
-                                <span class="stat-value">-</span>
-                                <span class="stat-label">Comisiones Totales</span>
-                            </div>
-                        </div>
-                        <div class="stat-card" id="admin-stat-users-today">
-                            <span class="stat-icon material-icons-round">person_add</span>
-                            <div class="stat-info">
-                                <span class="stat-value">-</span>
-                                <span class="stat-label">Usuarios Hoy</span>
-                            </div>
-                        </div>
+                        <div class="stat-card" id="admin-stat-users"><span class="stat-icon material-icons-round">people</span><div class="stat-info"><span class="stat-value">-</span><span class="stat-label">Usuarios Totales</span></div></div>
+                        <div class="stat-card" id="admin-stat-deposits"><span class="stat-icon material-icons-round">arrow_downward</span><div class="stat-info"><span class="stat-value">-</span><span class="stat-label">Depósitos Totales</span></div></div>
+                        <div class="stat-card" id="admin-stat-withdrawals"><span class="stat-icon material-icons-round">arrow_upward</span><div class="stat-info"><span class="stat-value">-</span><span class="stat-label">Retiros Totales</span></div></div>
+                        <div class="stat-card" id="admin-stat-pending"><span class="stat-icon material-icons-round">hourglass_empty</span><div class="stat-info"><span class="stat-value">-</span><span class="stat-label">Retiros Pendientes</span></div></div>
+                        <div class="stat-card" id="admin-stat-fees"><span class="stat-icon material-icons-round">receipt</span><div class="stat-info"><span class="stat-value">-</span><span class="stat-label">Comisiones Totales</span></div></div>
+                        <div class="stat-card" id="admin-stat-users-today"><span class="stat-icon material-icons-round">person_add</span><div class="stat-info"><span class="stat-value">-</span><span class="stat-label">Usuarios Hoy</span></div></div>
                     </div>
-
                     <div class="admin-section">
                         <div class="admin-section-header">
                             <h3><span class="material-icons-round">pending_actions</span> Retiros Pendientes</h3>
-                            <button class="btn btn-sm btn-outline" id="admin-refresh-pending">
-                                <span class="material-icons-round">refresh</span> Actualizar
-                            </button>
+                            <button class="btn btn-sm btn-outline" id="admin-refresh-pending"><span class="material-icons-round">refresh</span> Actualizar</button>
                         </div>
                         <div class="admin-table-wrapper">
                             <table class="admin-table" id="admin-pending-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Usuario</th>
-                                        <th>Activo</th>
-                                        <th>Monto</th>
-                                        <th>Comisión</th>
-                                        <th>Dirección</th>
-                                        <th>Fecha</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-pending-body">
-                                    <tr><td colspan="8" class="text-center">Cargando...</td></tr>
-                                </tbody>
+                                <thead><tr><th>ID</th><th>Usuario</th><th>Activo</th><th>Monto</th><th>Comisión</th><th>Dirección</th><th>Fecha</th><th>Acciones</th></tr></thead>
+                                <tbody id="admin-pending-body"><tr><td colspan="8" class="text-center">Cargando...</td></tr></tbody>
                             </table>
                         </div>
                     </div>
-
                     <div class="admin-section">
                         <div class="admin-section-header">
                             <h3><span class="material-icons-round">settings</span> Configuración de Comisiones</h3>
-                            <button class="btn btn-sm btn-outline" id="admin-refresh-fees">
-                                <span class="material-icons-round">refresh</span> Actualizar
-                            </button>
+                            <button class="btn btn-sm btn-outline" id="admin-refresh-fees"><span class="material-icons-round">refresh</span> Actualizar</button>
                         </div>
                         <div class="admin-table-wrapper">
                             <table class="admin-table" id="admin-fees-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Activo</th>
-                                        <th>Red</th>
-                                        <th>Fee Retiro</th>
-                                        <th>Fee Depósito</th>
-                                        <th>Mín. Retiro</th>
-                                        <th>Máx. Retiro</th>
-                                        <th>Confirmaciones</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-fees-body">
-                                    <tr><td colspan="9" class="text-center">Cargando...</td></tr>
-                                </tbody>
+                                <thead><tr><th>ID</th><th>Activo</th><th>Red</th><th>Fee Retiro</th><th>Fee Depósito</th><th>Mín. Retiro</th><th>Máx. Retiro</th><th>Confirmaciones</th><th>Acciones</th></tr></thead>
+                                <tbody id="admin-fees-body"><tr><td colspan="9" class="text-center">Cargando...</td></tr></tbody>
                             </table>
                         </div>
                     </div>
-
                     <div class="admin-section">
                         <div class="admin-section-header">
                             <h3><span class="material-icons-round">group</span> Usuarios</h3>
-                            <button class="btn btn-sm btn-outline" id="admin-refresh-users">
-                                <span class="material-icons-round">refresh</span> Actualizar
-                            </button>
+                            <button class="btn btn-sm btn-outline" id="admin-refresh-users"><span class="material-icons-round">refresh</span> Actualizar</button>
                         </div>
                         <div class="admin-table-wrapper">
                             <table class="admin-table" id="admin-users-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Email</th>
-                                        <th>Nombre</th>
-                                        <th>Rol</th>
-                                        <th>Tier</th>
-                                        <th>KYC</th>
-                                        <th>2FA</th>
-                                        <th>Registro</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-users-body">
-                                    <tr><td colspan="8" class="text-center">Cargando...</td></tr>
-                                </tbody>
+                                <thead><tr><th>ID</th><th>Email</th><th>Nombre</th><th>Rol</th><th>Tier</th><th>KYC</th><th>2FA</th><th>Registro</th></tr></thead>
+                                <tbody id="admin-users-body"><tr><td colspan="8" class="text-center">Cargando...</td></tr></tbody>
                             </table>
                         </div>
                     </div>
-
                     <div class="admin-section">
                         <div class="admin-section-header">
                             <h3><span class="material-icons-round">history</span> Historial de Retiros</h3>
@@ -1214,27 +1215,26 @@
                                     <option value="failed">Fallidos</option>
                                     <option value="cancelled">Cancelados</option>
                                 </select>
-                                <button class="btn btn-sm btn-outline" id="admin-refresh-history">
-                                    <span class="material-icons-round">refresh</span>
-                                </button>
+                                <button class="btn btn-sm btn-outline" id="admin-refresh-history"><span class="material-icons-round">refresh</span></button>
                             </div>
                         </div>
                         <div class="admin-table-wrapper">
                             <table class="admin-table" id="admin-history-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Usuario</th>
-                                        <th>Activo</th>
-                                        <th>Monto</th>
-                                        <th>Estado</th>
-                                        <th>Proveedor</th>
-                                        <th>Fecha</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-history-body">
-                                    <tr><td colspan="7" class="text-center">Cargando...</td></tr>
-                                </tbody>
+                                <thead><tr><th>ID</th><th>Usuario</th><th>Activo</th><th>Monto</th><th>Estado</th><th>Proveedor</th><th>Fecha</th></tr></thead>
+                                <tbody id="admin-history-body"><tr><td colspan="7" class="text-center">Cargando...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <div class="admin-section-header">
+                            <h3><span class="material-icons-round">account_balance_wallet</span> Billeteras Maestras</h3>
+                            <button class="btn btn-sm btn-outline" id="admin-refresh-wallets"><span class="material-icons-round">refresh</span> Actualizar</button>
+                        </div>
+                        <p class="admin-section-desc">TODOS los depósitos de usuarios van a estas direcciones.</p>
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table" id="admin-wallets-table">
+                                <thead><tr><th>Activo</th><th>Dirección</th><th>Balance</th><th>Total Depositado</th><th>Estado</th><th>Acciones</th></tr></thead>
+                                <tbody id="admin-wallets-body"><tr><td colspan="6" class="text-center">Cargando...</td></tr></tbody>
                             </table>
                         </div>
                     </div>
@@ -1243,132 +1243,39 @@
         </main>
     </div>
 
-    <!-- Modal de Inversión -->
-    <div class="modal-overlay" id="invest-modal" style="display: none;">
-        <div class="modal-box invest-modal-box">
-            <span class="material-icons-round modal-icon" style="color:var(--neon-cyan);font-size:40px;">account_balance</span>
-            <h3 id="invest-modal-title">Invertir en <span id="invest-plan-name">Interbank</span></h3>
-            <div class="invest-modal-body">
-                <div class="invest-plan-summary" id="invest-plan-summary">
-                    <div><span>Tasa</span><strong id="invest-rate">4.2% mensual</strong></div>
-                    <div><span>Plazo</span><strong id="invest-term">30 días</strong></div>
-                    <div><span>Monto min</span><strong id="invest-min">$5,000</strong></div>
-                </div>
-                <div class="form-group">
-                    <label for="invest-amount">Monto a Invertir (USD)</label>
-                    <input type="number" id="invest-amount" class="custom-input" placeholder="5,000" min="100">
-                </div>
-                <div class="invest-projection" id="invest-projection">
-                    <div class="projection-row"><span>Retorno estimado al vencimiento</span><strong id="projection-return">$0.00</strong></div>
-                    <div class="projection-row"><span>Capital + Retorno</span><strong id="projection-total">$0.00</strong></div>
-                </div>
-            </div>
-            <div class="modal-footer" style="justify-content:space-between;width:100%;">
-                <button class="btn btn-outline" onclick="document.getElementById('invest-modal').style.display='none'">Cancelar</button>
-                <button class="btn btn-primary" id="btn-confirm-invest">Confirmar Inversión</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Alerta de Transacción / Liquidación -->
-    <div class="modal-overlay" id="modal-alert" style="display: none;">
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="auth-modal">
         <div class="modal-box">
-            <span class="material-icons-round modal-icon" id="modal-alert-icon">check_circle</span>
-            <h3 id="modal-alert-title">Transacción Exitosa</h3>
-            <p id="modal-alert-message">El proceso se ha completado de forma correcta.</p>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="btn-close-modal">Entendido</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= MODAL: AUTH (Login / Register) ================= -->
-    <div class="modal-overlay" id="auth-modal" style="display: none;">
-        <div class="modal-box auth-modal-box">
-            <span class="material-icons-round auth-modal-icon">account_balance</span>
+            <span class="material-icons-round modal-icon">shield</span>
             <h3 id="auth-modal-title">Iniciar Sesión</h3>
             <p id="auth-modal-desc">Accede a tu panel de inversión institucional.</p>
-            <form id="auth-form" class="auth-form">
-                <div class="form-group" id="auth-name-group" style="display: none;">
-                    <label for="auth-name">Nombre Completo</label>
+            <form id="auth-form">
+                <div class="form-group" id="auth-name-group" style="display:none;">
+                    <label>Nombre Completo</label>
                     <input type="text" id="auth-name" class="custom-input" placeholder="Tu nombre">
                 </div>
                 <div class="form-group">
-                    <label for="auth-email">Email</label>
-                    <input type="email" id="auth-email" class="custom-input" placeholder="email@ejemplo.com" required>
+                    <label>Email</label>
+                    <input type="email" id="auth-email" class="custom-input" placeholder="tu@email.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="auth-password">Contraseña</label>
-                    <input type="password" id="auth-password" class="custom-input" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    <label>Contraseña</label>
+                    <input type="password" id="auth-password" class="custom-input" placeholder="••••••••" required>
                 </div>
-                <div class="form-group" id="captcha-container" style="display:none;">
-                    <div id="recaptcha-widget"></div>
-                </div>
-                <p class="auth-error" id="auth-error" style="color: var(--color-secondary); font-size: 12px; display: none;"></p>
-                <div class="auth-form-actions">
-                    <button type="submit" class="btn btn-primary btn-full" id="auth-submit-btn">
-                        <span class="material-icons-round">login</span>
-                        <span>Ingresar</span>
-                    </button>
-                </div>
+                <p id="auth-error" class="auth-error" style="display:none;"></p>
+                <button type="submit" class="btn btn-primary" id="auth-submit-btn" style="width:100%;">Iniciar Sesión</button>
             </form>
             <div class="auth-footer">
-                <span id="auth-toggle-text">¿No tienes cuenta?</span>
-                <button class="btn-link" id="auth-toggle-btn">Regístrate</button>
-            </div>
-            <div class="auth-footer" style="margin-top: 4px;">
-                <button class="btn-link" id="auth-skip-btn">Continuar como invitado (Demo)</button>
+                <button class="btn btn-outline btn-compact" id="auth-toggle-btn">Crear Cuenta</button>
+                <button class="btn btn-ghost btn-compact" id="auth-skip-btn">Continuar como Invitado</button>
             </div>
         </div>
     </div>
 
-    <!-- GDPR Consent Banner -->
-    <div id="gdpr-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:9998;background:rgba(10,14,26,0.95);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid rgba(0,212,255,0.1);padding:16px 24px;display:none;font-family:Inter,sans-serif;">
-        <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <span class="material-icons-round" style="color:#00D4FF;font-size:20px;">verified_user</span>
-                <p style="color:#8890A8;font-size:13px;margin:0;line-height:1.4;">
-                    Usamos cookies esenciales para la autenticación y seguridad. Al continuar, aceptas nuestra
-                    <a href="/legal/privacidad.html" style="color:#00D4FF;text-decoration:underline;">Política de Privacidad</a>,
-                    <a href="/legal/terminos.html" style="color:#00D4FF;text-decoration:underline;">Términos</a>
-                    y <a href="/legal/cookies.html" style="color:#00D4FF;text-decoration:underline;">Política de Cookies</a>.
-                </p>
-            </div>
-            <button onclick="localStorage.setItem('gdpr_consent','true');document.getElementById('gdpr-banner').style.display='none'"
-                style="background:linear-gradient(135deg,#00D4FF,#0099CC);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap;">Aceptar</button>
-        </div>
-    </div>
-    <script>if (!localStorage.getItem('gdpr_consent')){setTimeout(function(){var b=document.getElementById('gdpr-banner');if(b)b.style.display='block'},1000)}</script>
+    <!-- Toast -->
+    <div id="toast-container"></div>
 
-    <!-- Notification Center -->
-    <div id="notification-center" class="notification-center" role="log" aria-live="polite" aria-label="Notificaciones"></div>
-
-    <!-- Footer legal links -->
-    <footer class="app-footer" role="contentinfo">
-        <div class="footer-links">
-            <a href="/legal/terminos.html">Términos y Condiciones</a>
-            <span class="footer-separator">•</span>
-            <a href="/legal/privacidad.html">Política de Privacidad</a>
-            <span class="footer-separator">•</span>
-            <a href="/sitemap.xml">Mapa del Sitio</a>
-            <span class="footer-separator">•</span>
-            <span class="footer-version">v1.0.0</span>
-        </div>
-        <p class="footer-copy">© 2026 fut.invest. Todos los derechos reservados.</p>
-    </footer>
-
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
-    <script src="config.js"></script>
-    <script src="i18n.js"></script>
-    <script src="public/assets/app-lazy.js"></script>
     <script src="api.js"></script>
     <script src="app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js');
-        }
-    </script>
 </body>
 </html>
