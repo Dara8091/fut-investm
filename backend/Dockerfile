@@ -1,54 +1,33 @@
-# Build stage
-FROM node:20-alpine AS builder
-
-# Force rebuild
-ARG REBUILD_DATE=2026-05-26-v2
-
-WORKDIR /app
-
-# Install build tools for native modules (better-sqlite3)
-RUN apk add --no-cache python3 make g++
-
-# Copy package files first for better caching
-COPY package.json package-lock.json* ./
-
-# Install production dependencies only
-RUN npm install --omit=dev --no-optional 2>/dev/null || npm install --omit=dev
-
-# Copy application source
-COPY src/ ./src/
-
-# Verify the build
-RUN ls -la /app/src/ && echo "Build OK"
-
 # Production stage
-FROM node:20-alpine
-
-ARG REBUILD_DATE=2026-05-26-v2
+FROM node:20-slim
 
 WORKDIR /app
 
 # Install curl for healthcheck
-RUN apk add --no-cache curl
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Copy built artifacts from builder
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/package.json ./
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install production dependencies
+RUN npm install --omit=dev --no-optional
+
+# Copy application source
+COPY src/ ./src/
 
 # Create runtime directories
 RUN mkdir -p data logs
 
 # Set proper permissions
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
+RUN addgroup --system nodejs && \
+    adduser --system --ingroup nodejs nodejs && \
     chown -R nodejs:nodejs /app
 
 USER nodejs
 
 EXPOSE 3001
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:3001/api/health || exit 1
 
 CMD ["node", "src/index.js"]
