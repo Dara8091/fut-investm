@@ -1,4 +1,4 @@
-# Build stage
+# Build stage - rebuilt 2026-05-26
 FROM node:20-alpine AS builder
 
 WORKDIR /app
