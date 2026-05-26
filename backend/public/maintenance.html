@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fut.invest — Mantenimiento</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0A0E1A;
+            color: #E8ECF4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 40px 20px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #00D4FF, #00FF88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 32px;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        p {
+            font-size: 16px;
+            color: #8B95A8;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00D4FF, #00FF88);
+            animation: progress 2s ease-in-out infinite;
+            border-radius: 2px;
+        }
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        .status {
+            font-size: 13px;
+            color: #5A6478;
+        }
+        .contact {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: #8B95A8;
+        }
+        .contact a {
+            color: #00D4FF;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">fut.invest</div>
+        <div class="badge">⚙️ Mantenimiento Programado</div>
+        
+        <h1>Estamos mejorando tu experiencia</h1>
+        <p>
+            Estamos realizando actualizaciones para ofrecerte un servicio más rápido y seguro.
+            Estaremos de vuelta en breve.
+        </p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="status">Tiempo estimado: 15-30 minutos</div>
+        
+        <div class="contact">
+            ¿Necesitas ayuda? <a href="mailto:soporte@futinvest.io">soporte@futinvest.io</a>
+        </div>
+    </div>
+</body>
+</html>

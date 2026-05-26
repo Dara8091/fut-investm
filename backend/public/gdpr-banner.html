@@ -1,0 +1,23 @@
+<div id="gdpr-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:9998;background:rgba(10,14,26,0.95);backdrop-filter:blur(12px);border-top:1px solid rgba(0,212,255,0.1);padding:16px 24px;display:none;font-family:Inter,sans-serif;">
+  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="color:#00D4FF;font-size:20px;">shield</span>
+      <p style="color:#8890A8;font-size:13px;margin:0;line-height:1.4;">
+        Usamos cookies esenciales para la autenticación y seguridad. Al continuar navegando, aceptas nuestra
+        <a href="/legal/privacidad.html" style="color:#00D4FF;text-decoration:underline;">Política de Privacidad</a>
+        y <a href="/legal/terminos.html" style="color:#00D4FF;text-decoration:underline;">Términos y Condiciones</a>.
+      </p>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+      <button onclick="localStorage.setItem('gdpr_consent','true');document.getElementById('gdpr-banner').style.display='none'"
+        style="background:linear-gradient(135deg,#00D4FF,#0099CC);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;font-size:13px;">Aceptar</button>
+      <button onclick="document.getElementById('gdpr-banner').style.display='none'"
+        style="background:transparent;color:#606880;border:1px solid rgba(0,212,255,0.1);padding:10px 24px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;">Configurar</button>
+    </div>
+  </div>
+</div>
+<script>
+if (!localStorage.getItem('gdpr_consent')) {
+  setTimeout(() => { document.getElementById('gdpr-banner').style.display = 'block'; }, 1000);
+}
+</script>

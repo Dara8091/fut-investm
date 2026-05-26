@@ -1,24 +1,73 @@
-node_modules
-npm-debug.log
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Environment
 .env
 .env.local
+.env.*.local
+
+# Logs
 *.log
-.git
-.gitignore
-Dockerfile
-docker-compose*.yml
-.dockerignore
-tests
-__tests__
-*.test.js
-*.spec.js
-coverage
-.nyc_output
-docs
-scripts
-backup
-data
-logs
+logs/
 server.log
 stderr.log
 stdout.log
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test & Coverage
+coverage/
+.nyc_output/
+*.test.js
+*.spec.js
+__tests__/
+tests/
+e2e/
+k6/
+frontend-tests/
+
+# Documentation
+docs/
+*.md
+CHANGELOG*
+README*
+SECURITY*
+
+# Scripts & Config
+scripts/
+backup/
+data/
+infra/
+k8s/
+terraform/
+monitoring/
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Build artifacts
+dist/
+build/
+.next/
+
+# Misc
+*.tgz
+*.tar.gz

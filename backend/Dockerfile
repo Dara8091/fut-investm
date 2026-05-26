@@ -1,29 +1,35 @@
 # Production stage
-FROM node:20-slim
+FROM node:20-slim AS production
 
 WORKDIR /app
 
-# Install curl for healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Install system dependencies for native modules and runtime
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl python3 make g++ && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install production dependencies
-RUN npm install --omit=dev --no-optional
+# Install production dependencies with native module rebuild
+RUN npm ci --omit=dev && \
+    npm rebuild better-sqlite3 && \
+    npm cache clean --force
 
 # Copy application source
 COPY src/ ./src/
 
+# Copy public assets (legal pages, 404, etc.)
+COPY public/ ./public/
+
 # Create runtime directories
 RUN mkdir -p data logs
 
-# Set proper permissions
-RUN addgroup --system nodejs && \
-    adduser --system --ingroup nodejs nodejs && \
-    chown -R nodejs:nodejs /app
+# Set proper permissions for node user (uid 1000)
+RUN chown -R node:node /app
 
-USER nodejs
+# Use default node user
+USER node
 
 EXPOSE 3001
 

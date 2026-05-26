@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /legal/
+
+Sitemap: https://futinvest.io/sitemap.xml
