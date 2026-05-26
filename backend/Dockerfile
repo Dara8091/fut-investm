@@ -9,12 +9,11 @@ RUN apk add --no-cache python3 make g++
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install dependencies (use npm install, not ci, to be resilient)
+RUN npm install --omit=dev && npm cache clean --force
 
 # Copy source code
 COPY src/ ./src/
-COPY public/ ./public/
 
 # Production stage
 FROM node:20-alpine
@@ -27,11 +26,10 @@ RUN apk add --no-cache curl
 # Copy from builder
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 
 # Create necessary directories
-RUN mkdir -p data logs && chown -R nodejs:nodejs /app
+RUN mkdir -p data logs
 
 # Run as non-root user
 RUN addgroup -g 1001 -S nodejs && \
