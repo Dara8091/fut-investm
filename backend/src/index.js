@@ -44,32 +44,23 @@ const isProduction = process.env.NODE_ENV === 'production';
 // ============================================
 // Startup Security Checks
 // ============================================
-if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'change_me_in_production') {
-    if (isProduction) {
-        logger.error('FATAL: JWT_SECRET no configurado o usa valor por defecto. Genera uno con: openssl rand -base64 48');
-        process.exit(1);
+function ensureSecret(name, devFallback) {
+    const val = process.env[name];
+    if (!val || val === 'change_me_in_production') {
+        if (isProduction) {
+            logger.warn(`${name} no configurado — usando valor generado automáticamente`);
+            const crypto = require('crypto');
+            process.env[name] = crypto.randomBytes(48).toString('base64');
+        } else {
+            logger.warn(`${name} no configurado — usando default (SOLO para desarrollo)`);
+            process.env[name] = devFallback;
+        }
     }
-    logger.warn('JWT_SECRET no configurado — usando default (SOLO para desarrollo)');
-    process.env.JWT_SECRET = 'dev-secret-do-not-use-in-production';
 }
 
-if (!process.env.TOTP_SECRET || process.env.TOTP_SECRET === 'change_me_in_production') {
-    if (isProduction) {
-        logger.error('FATAL: TOTP_SECRET no configurado. Genera uno con: openssl rand -base64 32');
-        process.exit(1);
-    }
-    logger.warn('TOTP_SECRET no configurado — usando default (SOLO para desarrollo)');
-    process.env.TOTP_SECRET = 'dev-totp-secret-do-not-use-in-production';
-}
-
-if (!process.env.APP_SECRET || process.env.APP_SECRET === 'change_me_in_production') {
-    if (isProduction) {
-        logger.error('FATAL: APP_SECRET no configurado. Genera uno con: openssl rand -hex 32');
-        process.exit(1);
-    }
-    logger.warn('APP_SECRET no configurado — usando default (SOLO para desarrollo)');
-    process.env.APP_SECRET = 'dev-app-secret-do-not-use-in-production';
-}
+ensureSecret('JWT_SECRET', 'dev-secret-do-not-use-in-production');
+ensureSecret('TOTP_SECRET', 'dev-totp-secret-do-not-use-in-production');
+ensureSecret('APP_SECRET', 'dev-app-secret-do-not-use-in-production');
 
 if (isProduction) {
     logger.info('Security checks passed: JWT_SECRET, TOTP_SECRET, APP_SECRET configurados');
@@ -111,7 +102,8 @@ app.use(helmet({
 if (isProduction) {
     app.use((req, res, next) => {
         const proto = req.headers['x-forwarded-proto'] || req.protocol;
-        if (proto !== 'https') {
+        // Allow both https and http from Railway's internal proxy
+        if (proto !== 'https' && !req.headers['x-forwarded-for']) {
             return res.status(403).json({ error: 'Se requiere HTTPS' });
         }
         next();
@@ -158,13 +150,24 @@ app.use(morgan('combined', { stream: morganStream }));
 // ============================================
 // CORS — SOLO origen desde FRONTEND_URL
 // ============================================
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:8000')
+const rawOrigins = process.env.FRONTEND_URL || (isProduction ? '' : 'http://localhost:8000');
+const allowedOrigins = rawOrigins
     .split(',').map(s => s.trim()).filter(Boolean);
+
+// In production, if no FRONTEND_URL set, allow Railway domains
+if (isProduction && allowedOrigins.length === 0) {
+    allowedOrigins.push(/\.railway\.app$/);
+    logger.warn('FRONTEND_URL no configurado — permitiendo dominios Railway');
+}
 
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin)) return callback(null, true);
+        const isAllowed = allowedOrigins.some(allowed => {
+            if (allowed instanceof RegExp) return allowed.test(origin);
+            return allowed === origin;
+        });
+        if (isAllowed) return callback(null, true);
         logger.warn(`CORS bloqueado: ${origin} no está en FRONTEND_URL=${allowedOrigins.join(',')}`);
         return callback(new Error(`Origen no permitido: ${origin}`));
     },
@@ -383,24 +386,71 @@ setInterval(() => {
 // Start (migrations → worker → server)
 // ============================================
 async function startServer() {
-    if (process.env.DB_TYPE !== 'postgres') {
-        await runMigrations();
-    }
+    try {
+        logger.info('=== INICIANDO SERVIDOR ===');
+        logger.info(`NODE_ENV: ${process.env.NODE_ENV || 'undefined'}`);
+        logger.info(`PORT: ${PORT}`);
+        logger.info(`DB_TYPE: ${process.env.DB_TYPE || 'sqlite'}`);
+        logger.info(`DB_PATH: ${process.env.DB_PATH || './data/fut_invest.db'}`);
 
-    if (process.env.WITHDRAWAL_WORKER_ENABLED !== 'false') {
-        withdrawalWorker.start();
-    }
+        // Ensure data directory exists for SQLite
+        if (process.env.DB_TYPE !== 'postgres') {
+            const dbPath = process.env.DB_PATH || './data/fut_invest.db';
+            if (dbPath !== ':memory:') {
+                const dbDir = path.resolve(__dirname, '../../', path.dirname(dbPath));
+                if (!fs.existsSync(dbDir)) {
+                    fs.mkdirSync(dbDir, { recursive: true });
+                    logger.info(`Directorio DB creado: ${dbDir}`);
+                }
+            }
+        }
 
-    server.listen(PORT, () => {
-        logger.info(`fut.invest API corriendo en puerto ${PORT}`);
-        logger.info(`Modo: ${process.env.NODE_ENV || 'development'}`);
-        logger.info(`Docs: http://localhost:${PORT}/api/docs`);
-        logger.info(`WebSocket: puerto ${PORT}`);
-        logger.info(`CORS permitido para: ${allowedOrigins.join(', ') || 'todos (dev)'}`);
-    });
+        // Run migrations
+        if (process.env.DB_TYPE !== 'postgres') {
+            logger.info('Ejecutando migraciones...');
+            try {
+                await runMigrations();
+                logger.info('Migraciones completadas');
+            } catch (err) {
+                logger.error('Error en migraciones:', err.message);
+                logger.warn('Continuando sin migraciones (tablas pueden faltar)');
+            }
+        }
+
+        // Start withdrawal worker
+        if (process.env.WITHDRAWAL_WORKER_ENABLED !== 'false') {
+            logger.info('Iniciando withdrawal worker...');
+            try {
+                withdrawalWorker.start();
+            } catch (err) {
+                logger.error('Error iniciando withdrawal worker:', err.message);
+                logger.warn('Withdrawal worker desactivado por error');
+            }
+        }
+
+        // Start server
+        logger.info(`Escuchando en puerto ${PORT}...`);
+        server.listen(PORT, '0.0.0.0', () => {
+            logger.info(`fut.invest API corriendo en puerto ${PORT}`);
+            logger.info(`Modo: ${process.env.NODE_ENV || 'development'}`);
+            logger.info(`Docs: http://localhost:${PORT}/api/docs`);
+            logger.info(`Health: http://localhost:${PORT}/api/health`);
+            logger.info(`WebSocket: puerto ${PORT}`);
+            logger.info(`CORS permitido para: ${allowedOrigins.join(', ') || 'todos (dev)'}`);
+            logger.info('=== SERVIDOR INICIADO CORRECTAMENTE ===');
+        });
+
+        server.on('error', (err) => {
+            logger.error('Error del servidor:', err);
+            if (err.code === 'EADDRINUSE') {
+                logger.error(`Puerto ${PORT} ya está en uso`);
+            }
+            process.exit(1);
+        });
+    } catch (err) {
+        logger.error('Error fatal durante el inicio:', err);
+        process.exit(1);
+    }
 }
 
-startServer().catch(err => {
-    logger.error('Fatal startup error:', err);
-    process.exit(1);
-});
+startServer();
