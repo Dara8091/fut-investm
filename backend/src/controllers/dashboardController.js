@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const { listCurrencies } = require('../config/currencies');
 const pythonClient = require('../services/pythonClient');
+const marketData = require('../services/marketDataService');
 
 async function getDashboard(req, res) {
     try {
@@ -50,6 +51,20 @@ async function getDashboard(req, res) {
             return { code: c.code, name: c.name, symbol: c.symbol, decimals: c.decimals, balance: match ? match.balance : 0, networks: c.networks };
         });
 
+        // Market overview data (non-blocking, may fail gracefully)
+        let marketOverview = null;
+        let fearGreed = null;
+        let topCoins = [];
+        try {
+            [marketOverview, fearGreed, topCoins] = await Promise.allSettled([
+                marketData.getMarketOverview(),
+                marketData.getFearAndGreed(),
+                marketData.getTopCoins(10),
+            ]).then(results => results.map(r => r.status === 'fulfilled' ? r.value : null));
+        } catch (e) {
+            // Market data is optional, don't fail the dashboard
+        }
+
         res.json({
             balance: account.balance,
             accumulatedEarnings: account.accumulated_earnings,
@@ -71,6 +86,9 @@ async function getDashboard(req, res) {
             roiAnalysis,
             balances,
             currencies,
+            marketOverview: marketOverview || null,
+            fearGreed: fearGreed || null,
+            topCoins: topCoins || [],
         });
     } catch (err) {
         require('../config/logger').error('Error en getDashboard:', err);

@@ -8,6 +8,100 @@ document.addEventListener('DOMContentLoaded', () => {
     let oppCount = 0;
     let bestProfit = 0;
 
+    // ============================================
+    // Market Data (Live from CoinGecko)
+    // ============================================
+    async function loadMarketOverview() {
+        try {
+            const res = await fetch(`${API_BASE}/market/overview`);
+            if (!res.ok) throw new Error('Failed');
+            const data = await res.json();
+            if (data.error) return;
+
+            document.getElementById('market-cap').textContent = formatLargeNumber(data.totalMarketCap);
+            document.getElementById('market-volume').textContent = formatLargeNumber(data.totalVolume);
+            document.getElementById('btc-dominance').textContent = data.btcDominance.toFixed(1) + '%';
+            document.getElementById('btc-dominance').classList.add('btc-dom');
+            document.getElementById('eth-dominance').textContent = data.ethDominance.toFixed(1) + '%';
+            document.getElementById('eth-dominance').classList.add('eth-dom');
+            document.getElementById('active-cryptos').textContent = data.activeCryptocurrencies?.toLocaleString() || '—';
+        } catch (e) {
+            document.getElementById('market-cap').textContent = '—';
+            document.getElementById('market-volume').textContent = '—';
+            document.getElementById('btc-dominance').textContent = '—';
+            document.getElementById('eth-dominance').textContent = '—';
+            document.getElementById('active-cryptos').textContent = '—';
+        }
+    }
+
+    async function loadFearAndGreed() {
+        try {
+            const res = await fetch(`${API_BASE}/market/fear-greed`);
+            if (!res.ok) throw new Error('Failed');
+            const data = await res.json();
+            if (data.error) return;
+
+            const el = document.getElementById('fear-greed');
+            el.textContent = `${data.value} — ${data.classification}`;
+            if (data.value <= 25) el.classList.add('fear-extreme');
+            else if (data.value >= 75) el.classList.add('fear-greed');
+        } catch (e) {
+            document.getElementById('fear-greed').textContent = '—';
+        }
+    }
+
+    async function loadLiveTicker() {
+        try {
+            const res = await fetch(`${API_BASE}/market/top?limit=10`);
+            if (!res.ok) throw new Error('Failed');
+            const coins = await res.json();
+            if (!coins.length) return;
+
+            const track = document.getElementById('live-ticker-track');
+            track.innerHTML = coins.map(c => {
+                const change = c.change24h || 0;
+                const isUp = change >= 0;
+                return `<div class="ticker-item">
+                    <span class="ticker-symbol">${c.symbol}</span>
+                    <span class="ticker-price">$${formatPrice(c.price)}</span>
+                    <span class="ticker-change ${isUp ? 'up' : 'down'}">${isUp ? '+' : ''}${change.toFixed(2)}%</span>
+                </div>`;
+            }).join('');
+
+            // Duplicate for infinite scroll effect
+            track.innerHTML += track.innerHTML;
+        } catch (e) {
+            // Keep static fallback
+        }
+    }
+
+    function formatLargeNumber(num) {
+        if (!num) return '—';
+        if (num >= 1e12) return '$' + (num / 1e12).toFixed(2) + 'T';
+        if (num >= 1e9) return '$' + (num / 1e9).toFixed(2) + 'B';
+        if (num >= 1e6) return '$' + (num / 1e6).toFixed(2) + 'M';
+        return '$' + num.toLocaleString();
+    }
+
+    function formatPrice(price) {
+        if (!price) return '—';
+        if (price >= 1000) return price.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        if (price >= 1) return price.toFixed(2);
+        return price.toFixed(4);
+    }
+
+    // Load market data on startup
+    loadMarketOverview();
+    loadFearAndGreed();
+    loadLiveTicker();
+
+    // Refresh market data every 60 seconds
+    setInterval(() => {
+        loadMarketOverview();
+        loadFearAndGreed();
+        loadLiveTicker();
+    }, 60000);
+
     const navItems = document.querySelectorAll('.nav-item');
     const tabContents = document.querySelectorAll('.tab-content');
     const pageTitle = document.getElementById('current-page-title');

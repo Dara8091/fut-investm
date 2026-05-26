@@ -781,6 +781,59 @@ body {
     color: var(--text-primary);
 }
 
+/* ===== Market Overview Bar (Professional - CoinMarketCap style) ===== */
+.market-overview-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(0, 40, 85, 0.6) 0%, rgba(10, 14, 26, 0.9) 100%);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.market-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 100px;
+}
+
+.market-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.market-stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.market-stat-value.fear-extreme {
+    color: var(--red-primary);
+}
+
+.market-stat-value.fear-greed {
+    color: var(--neon-gold);
+}
+
+.market-stat-value.btc-dom {
+    color: #F7931A;
+}
+
+.market-stat-value.eth-dom {
+    color: #627EEA;
+}
+
 /* ===== Market Ticker Bar ===== */
 .market-ticker-bar {
     background: rgba(10, 14, 26, 0.95);

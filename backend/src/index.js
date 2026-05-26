@@ -33,6 +33,7 @@ const settingsRoutes = require('./routes/settings');
 const referralsRoutes = require('./routes/referrals');
 const profileRoutes = require('./routes/profile');
 const v1Router = require('./routes/v1');
+const marketRoutes = require('./routes/market');
 const withdrawalWorker = require('./services/withdrawalWorker');
 const notificationService = require('./services/notificationService');
 const { runMigrations } = require('./db/migrations');
@@ -245,6 +246,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/referrals', referralsRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/metrics', metricsRoutes);
+app.use('/api/market', marketRoutes);
 
 // Sentry error handler (must be before express error handler)
 if (process.env.SENTRY_DSN) {

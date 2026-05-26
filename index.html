@@ -109,17 +109,45 @@
             <div class="content-scroll">
                 <!-- ==================== DASHBOARD ==================== -->
                 <section class="tab-content active" id="tab-dashboard">
-                    <!-- Market Ticker Bar -->
+                    <!-- Market Overview Bar (Professional - like CoinMarketCap) -->
+                    <div class="market-overview-bar" id="market-overview-bar">
+                        <div class="market-stat">
+                            <span class="market-stat-label">Market Cap</span>
+                            <span class="market-stat-value" id="market-cap">—</span>
+                        </div>
+                        <div class="market-stat">
+                            <span class="market-stat-label">Volumen 24h</span>
+                            <span class="market-stat-value" id="market-volume">—</span>
+                        </div>
+                        <div class="market-stat">
+                            <span class="market-stat-label">BTC Dominancia</span>
+                            <span class="market-stat-value" id="btc-dominance">—</span>
+                        </div>
+                        <div class="market-stat">
+                            <span class="market-stat-label">ETH Dominancia</span>
+                            <span class="market-stat-value" id="eth-dominance">—</span>
+                        </div>
+                        <div class="market-stat">
+                            <span class="market-stat-label">Fear & Greed</span>
+                            <span class="market-stat-value" id="fear-greed">—</span>
+                        </div>
+                        <div class="market-stat">
+                            <span class="market-stat-label">Criptos Activas</span>
+                            <span class="market-stat-value" id="active-cryptos">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Market Ticker Bar (Live Data) -->
                     <div class="market-ticker-bar">
-                        <div class="ticker-track">
-                            <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$67,234</span><span class="ticker-change up">+2.4%</span></div>
-                            <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$3,456</span><span class="ticker-change up">+1.8%</span></div>
-                            <div class="ticker-item"><span class="ticker-symbol">SOL</span><span class="ticker-price">$178</span><span class="ticker-change down">-0.5%</span></div>
-                            <div class="ticker-item"><span class="ticker-symbol">BNB</span><span class="ticker-price">$612</span><span class="ticker-change up">+0.9%</span></div>
-                            <div class="ticker-item"><span class="ticker-symbol">XRP</span><span class="ticker-price">$0.62</span><span class="ticker-change up">+3.1%</span></div>
-                            <div class="ticker-item"><span class="ticker-symbol">ADA</span><span class="ticker-price">$0.48</span><span class="ticker-change down">-1.2%</span></div>
-                            <div class="ticker-item"><span class="ticker-symbol">DOGE</span><span class="ticker-price">$0.16</span><span class="ticker-change up">+5.4%</span></div>
-                            <div class="ticker-item"><span class="ticker-symbol">DOT</span><span class="ticker-price">$7.82</span><span class="ticker-change up">+1.1%</span></div>
+                        <div class="ticker-track" id="live-ticker-track">
+                            <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">SOL</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">BNB</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">XRP</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">ADA</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">DOGE</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
+                            <div class="ticker-item"><span class="ticker-symbol">DOT</span><span class="ticker-price">Cargando...</span><span class="ticker-change">—</span></div>
                         </div>
                     </div>
 
