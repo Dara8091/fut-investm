@@ -213,16 +213,6 @@ app.get('/api/docs.json', (req, res) => {
 });
 
 // ============================================
-// Run migrations on startup
-// ============================================
-if (process.env.DB_TYPE !== 'postgres') {
-    runMigrations().catch(err => {
-        logger.error('Error ejecutando migraciones:', err);
-        process.exit(1);
-    });
-}
-
-// ============================================
 // Routes — API v1
 // ============================================
 app.use('/api/v1', v1Router);
@@ -390,16 +380,27 @@ setInterval(() => {
 }, 4000);
 
 // ============================================
-// Start
+// Start (migrations → worker → server)
 // ============================================
-if (process.env.WITHDRAWAL_WORKER_ENABLED !== 'false') {
-    withdrawalWorker.start();
+async function startServer() {
+    if (process.env.DB_TYPE !== 'postgres') {
+        await runMigrations();
+    }
+
+    if (process.env.WITHDRAWAL_WORKER_ENABLED !== 'false') {
+        withdrawalWorker.start();
+    }
+
+    server.listen(PORT, () => {
+        logger.info(`fut.invest API corriendo en puerto ${PORT}`);
+        logger.info(`Modo: ${process.env.NODE_ENV || 'development'}`);
+        logger.info(`Docs: http://localhost:${PORT}/api/docs`);
+        logger.info(`WebSocket: puerto ${PORT}`);
+        logger.info(`CORS permitido para: ${allowedOrigins.join(', ') || 'todos (dev)'}`);
+    });
 }
 
-server.listen(PORT, () => {
-    logger.info(`fut.invest API corriendo en puerto ${PORT}`);
-    logger.info(`Modo: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`Docs: http://localhost:${PORT}/api/docs`);
-    logger.info(`WebSocket: puerto ${PORT}`);
-    logger.info(`CORS permitido para: ${allowedOrigins.join(', ') || 'todos (dev)'}`);
+startServer().catch(err => {
+    logger.error('Fatal startup error:', err);
+    process.exit(1);
 });
