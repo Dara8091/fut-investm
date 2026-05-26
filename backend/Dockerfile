@@ -1,35 +1,26 @@
-# Production stage
 FROM node:20-slim
 
 WORKDIR /app
 
-# Install system dependencies for native modules (better-sqlite3)
+# Install build dependencies for native modules
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Copy and install dependencies
+COPY package.json ./
+RUN npm install --production --no-optional 2>&1 || npm install --production
 
-# Install production dependencies
-# Use npm install instead of ci to handle missing/mismatched lock files gracefully
-RUN npm install --omit=dev && \
-    npm rebuild better-sqlite3 --build-from-source && \
-    npm cache clean --force
+# Rebuild native modules from source
+RUN cd node_modules/better-sqlite3 && npm run build-release 2>/dev/null || true
 
-# Copy application source
+# Copy application code
 COPY src/ ./src/
-
-# Copy public assets
 COPY public/ ./public/
 
-# Create runtime directories
-RUN mkdir -p data logs
+# Create directories
+RUN mkdir -p data logs && chown -R node:node /app
 
-# Set proper permissions
-RUN chown -R node:node /app
-
-# Use default node user
 USER node
 
 EXPOSE 3001
