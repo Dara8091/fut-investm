@@ -1,0 +1,48 @@
+# Git
+.git/
+.gitignore
+
+# Node modules (we install in Docker)
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+
+# Test files
+__tests__/
+tests/
+e2e/
+k6/
+frontend-tests/
+coverage/
+.nyc_output/
+
+# Infrastructure
+infra/
+terraform/
+k8s/
+monitoring/
+scripts/
+backup/
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Misc
+*.tgz
+*.tar.gz

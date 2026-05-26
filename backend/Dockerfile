@@ -7,15 +7,15 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends curl python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy and install dependencies
-COPY package.json ./
+# Copy and install backend dependencies
+COPY backend/package.json ./
 RUN npm install --production --no-optional 2>&1 || npm install --production
 
 # Rebuild native modules from source
 RUN cd node_modules/better-sqlite3 && npm run build-release 2>/dev/null || true
 
 # Copy application code
-COPY src/ ./src/
+COPY backend/src/ ./src/
 COPY public/ ./public/
 
 # Create directories
